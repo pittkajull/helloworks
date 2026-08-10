@@ -82,14 +82,14 @@ export default function Header() {
       initial={{ y: reduce ? 0 : -90, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: EASE }}
-      className={`fixed top-0 right-0 left-0 z-[5] flex h-[90px] items-center justify-between border-b px-[5vw] transition-[background-color,border-color,backdrop-filter] duration-300 max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
+      className={`fixed top-[16px] left-1/2 z-[50] flex h-[64px] w-[min(1240px,calc(100vw-28px))] -translate-x-1/2 items-center justify-between rounded-full border px-[28px] shadow-[0_12px_32px_rgba(23,23,23,.08)] transition-[background-color,border-color,backdrop-filter] duration-300 max-[900px]:px-[22px] max-[700px]:top-[12px] max-[700px]:h-[56px] max-[700px]:w-[calc(100vw-24px)] max-[700px]:px-[20px] ${
         onDark
           ? scrolled
-            ? 'border-paper/15 bg-ink/85 backdrop-blur-md'
-            : 'border-paper/15'
+            ? 'border-paper/15 bg-ink/85 backdrop-blur-xl'
+            : 'border-paper/15 bg-ink/55 backdrop-blur-xl'
           : scrolled
-            ? 'border-line bg-paper/85 backdrop-blur-md'
-            : 'border-line'
+            ? 'border-line bg-paper/85 backdrop-blur-xl'
+            : 'border-line bg-paper/55 backdrop-blur-xl'
       }`}
     >
       {/* Logo */}
@@ -97,7 +97,7 @@ export default function Header() {
         to="/"
         aria-label="HelloWorks home"
         onClick={closeAll}
-        className={`text-[1.42rem] font-extrabold tracking-[-0.08em] no-underline transition-colors ${
+        className={`text-[1.3rem] font-extrabold tracking-[-0.08em] no-underline transition-colors ${
           onDark ? 'text-paper' : 'text-ink'
         }`}
       >
@@ -114,13 +114,15 @@ export default function Header() {
           <Link
             key={link.to}
             to={link.to}
-            className={`group relative font-mono text-[0.7rem] font-medium uppercase no-underline transition-colors max-[900px]:text-[0.62rem] ${navColor}`}
+            className={`group relative font-mono text-[0.7rem] font-medium uppercase no-underline transition-all duration-300 hover:-translate-y-[1px] max-[900px]:text-[0.62rem] ${navColor}`}
           >
             {t(`nav.${link.key}`)}
             <span
               aria-hidden="true"
-              className="absolute -bottom-[6px] left-0 h-[2px] w-full origin-left scale-x-0 bg-current transition-transform duration-300 group-hover:scale-x-100"
-            />
+              className="absolute -right-[18px] top-1/2 -translate-y-1/2 translate-x-[3px] text-[1.05rem] opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+            >
+              ↗
+            </span>
           </Link>
         ))}
 
@@ -131,7 +133,7 @@ export default function Header() {
             aria-haspopup="true"
             aria-expanded={moreOpen}
             onClick={() => setMoreOpen((open) => !open)}
-            className={`group relative flex cursor-pointer items-center gap-[7px] border-0 bg-transparent p-0 font-mono text-[0.7rem] font-medium uppercase transition-colors max-[900px]:text-[0.62rem] ${navColor}`}
+            className={`group relative flex cursor-pointer items-center gap-[7px] border-0 bg-transparent p-0 font-mono text-[0.7rem] font-medium uppercase transition-all duration-300 hover:-translate-y-[1px] max-[900px]:text-[0.62rem] ${navColor}`}
           >
             {t('nav.other')}              <span
                 aria-hidden="true"
@@ -139,10 +141,6 @@ export default function Header() {
               >
               ▾
             </span>
-            <span
-              aria-hidden="true"
-              className="absolute -bottom-[6px] left-0 h-[2px] w-full origin-left scale-x-0 bg-current transition-transform duration-300 group-hover:scale-x-100"
-            />
           </button>
 
           <AnimatePresence>
@@ -247,13 +245,18 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* CTA + pilihan bahasa (desktop) */}
-      <div className="flex items-center gap-[24px] max-[900px]:gap-4 max-[700px]:hidden">
+      {/* CTA (tombol pil) + pilihan bahasa (desktop) */}
+      <div className="flex items-center gap-[18px] max-[900px]:gap-3 max-[700px]:hidden">
         <Link
           to="/#contact"
-          className={`font-mono text-[0.7rem] font-medium uppercase no-underline transition-colors max-[900px]:text-[0.62rem] ${navColor}`}
+          className={`group flex items-center gap-[9px] rounded-full px-[18px] py-[9px] font-mono text-[0.68rem] font-medium uppercase no-underline transition-colors duration-300 ${
+            onDark ? 'bg-paper text-ink hover:bg-acid' : 'bg-ink text-paper hover:bg-blue'
+          }`}
         >
-          {t('nav.cta')} <span className="ml-[10px] text-[1.05rem]">↗</span>
+          {t('nav.cta')}{' '}
+          <span className="text-[1rem] transition-transform duration-300 group-hover:translate-x-[3px] group-hover:-translate-y-[3px]">
+            ↗
+          </span>
         </Link>
         <LangSwitch onDark={onDark} />
       </div>
@@ -290,7 +293,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: reduce ? 0 : -10 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="absolute top-[72px] right-0 left-0 m-0 hidden flex-col gap-[18px] border-b border-line bg-paper px-[6vw] py-6 max-[700px]:flex"
+            className="absolute top-[68px] right-0 left-0 m-0 hidden flex-col gap-[18px] rounded-[24px] border border-line bg-paper p-6 shadow-[0_24px_60px_rgba(23,23,23,.22)] max-[700px]:flex"
           >
             {NAV_LINKS.map((link) => (
               <Link

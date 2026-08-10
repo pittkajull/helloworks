@@ -1,0 +1,317 @@
+import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
+import { EASE } from '../lib/motion'
+import { useLang } from '../lib/i18n.js'
+
+const NAV_LINKS = [
+  { to: '/#about', key: 'about' },
+  { to: '/#services', key: 'services' },
+  { to: '/#values', key: 'values' },
+]
+
+/* Toggle bahasa ID/EN — dipakai desktop & mobile */
+function LangSwitch({ onDark = false, className = '' }) {
+  const { lang, setLang } = useLang()
+  const muted = onDark ? 'text-paper/40 hover:text-paper' : 'text-ink/40 hover:text-ink'
+
+  return (
+    <div className={`flex items-center gap-[8px] font-mono text-[0.68rem] font-medium uppercase ${className}`}>
+      {['id', 'en'].map((code, i) => (
+        <span key={code} className="flex items-center gap-[8px]">
+          {i > 0 && <span className={onDark ? 'text-paper/30' : 'text-ink/30'}>/</span>}
+          <button
+            type="button"
+            aria-pressed={lang === code}
+            onClick={() => setLang(code)}
+            className={`cursor-pointer border-0 bg-transparent p-0 transition-colors ${
+              lang === code ? (onDark ? 'text-acid' : 'text-blue') : muted
+            }`}
+          >
+            {code.toUpperCase()}
+          </button>
+        </span>
+      ))}
+    </div>
+  )
+}
+
+export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
+  const reduce = useReducedMotion()
+  const { pathname } = useLocation()
+  const { t } = useLang()
+  // Halaman dengan hero gelap (ink) → header otomatis pakai teks terang
+  const onDark =
+    pathname.startsWith('/team') || pathname === '/lab' || pathname === '/playbook' || pathname.startsWith('/services')
+
+  const closeAll = () => {
+    setMenuOpen(false)
+    setMoreOpen(false)
+  }
+
+  // Tutup dropdown & menu mobile kalau pindah halaman
+  useEffect(() => {
+    closeAll()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
+
+  const navColor = onDark ? 'text-paper hover:text-acid' : 'text-ink hover:text-blue'
+
+  // Dropdown "Other" — Team & Lab beneran (featured = kartu bentang penuh), sisanya placeholder (soon)
+  const MORE_ITEMS = [
+    { to: '/team', label: 'Team', desc: t('other.teamDesc'), tag: null, featured: true },
+    { to: null, label: t('other.journalLabel'), desc: t('other.journalDesc'), tag: t('other.soon') },
+    { to: '/playbook', label: 'Playbook', desc: t('other.playbookDesc'), tag: null },
+    { to: '/lab', label: 'Lab', desc: t('other.labDesc'), tag: null },
+    { to: null, label: 'FAQ', desc: t('other.faqDesc'), tag: t('other.soon') },
+  ]
+
+  return (
+    <motion.header
+      initial={{ y: reduce ? 0 : -90, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: EASE }}
+      className={`absolute top-0 right-0 left-0 z-[5] flex h-[90px] items-center justify-between border-b px-[5vw] max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
+        onDark ? 'border-paper/15' : 'border-line'
+      }`}
+    >
+      {/* Logo */}
+      <Link
+        to="/"
+        aria-label="HelloWorks home"
+        onClick={closeAll}
+        className={`text-[1.42rem] font-extrabold tracking-[-0.08em] no-underline transition-colors ${
+          onDark ? 'text-paper' : 'text-ink'
+        }`}
+      >
+        <span className="italic">hello</span>works
+        <span className={`tracking-normal ${onDark ? 'text-acid' : 'text-blue'}`}>.</span>
+      </Link>
+
+      {/* Nav desktop */}
+      <nav aria-label="Navigasi utama" className="ml-[12%] flex items-center gap-9 max-[700px]:hidden">
+        {NAV_LINKS.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className={`font-mono text-[0.7rem] font-medium uppercase no-underline transition-colors ${navColor}`}
+          >
+            {t(`nav.${link.key}`)}
+          </Link>
+        ))}
+
+        {/* Other + mega-menu dropdown */}
+        <div className="relative" onMouseEnter={() => setMoreOpen(true)} onMouseLeave={() => setMoreOpen(false)}>
+          <button
+            type="button"
+            aria-haspopup="true"
+            aria-expanded={moreOpen}
+            onClick={() => setMoreOpen((open) => !open)}
+            className={`flex cursor-pointer items-center gap-[7px] border-0 bg-transparent p-0 font-mono text-[0.7rem] font-medium uppercase transition-colors ${navColor}`}
+          >
+            {t('nav.other')}              <span
+                aria-hidden="true"
+                className={`text-[0.62rem] transition-transform duration-300 ${moreOpen ? 'rotate-180' : ''} ${onDark ? 'text-acid' : 'text-blue'}`}
+              >
+              ▾
+            </span>
+          </button>
+
+          <AnimatePresence>
+            {moreOpen && (
+              /* top-full + pt-[11px]: padding ada DI DALAM box dropdown, jadi jalur
+                 hover dari tombol ke panel tetap kontinu */
+              <motion.div
+                key="more-dd"
+                initial={{ opacity: 0, y: reduce ? 0 : -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: reduce ? 0 : -10 }}
+                transition={{ duration: 0.22, ease: 'easeOut' }}
+                className="absolute top-full right-0 pt-[11px]"
+              >
+                {/* Mega-menu dua panel ala JCP */}
+                <div className="grid w-[min(560px,calc(100vw-56px))] grid-cols-[190px_1fr] border border-ink bg-paper shadow-[0_14px_30px_rgba(23,23,23,.18)] max-[900px]:grid-cols-1">
+                  {/* Panel intro kiri (gelap) */}
+                  <div className="flex min-h-[300px] flex-col bg-ink p-[20px] text-paper max-[900px]:hidden">
+                    <span className="font-mono text-[0.58rem] font-medium uppercase tracking-[0.1em] text-acid">
+                      {t('other.introLabel')}
+                    </span>
+                    <strong className="mt-auto text-[1.55rem] leading-[0.9] font-extrabold uppercase tracking-[-0.06em]">
+                      {t('other.head1')}
+                      <br />
+                      {t('other.head2a') ? `${t('other.head2a')} ` : ''}
+                      <em className="font-serif font-normal italic tracking-[-0.04em] text-acid">
+                        {t('other.head2b')}
+                      </em>
+                    </strong>
+                    <Link
+                      to="/#contact"
+                      onClick={closeAll}
+                      className="mt-[22px] flex items-center justify-between border-t border-paper/25 pt-[12px] font-mono text-[0.6rem] font-medium uppercase text-paper no-underline transition-colors hover:text-acid"
+                    >
+                      {t('other.introLink')} <span className="text-[1rem] text-acid">↗</span>
+                    </Link>
+                  </div>
+
+                  {/* Grid kartu kanan */}
+                  <div className="grid grid-cols-2">
+                    {MORE_ITEMS.map((item, i) =>
+                      item.featured ? (
+                        /* Kartu unggulan (Team) — bentang penuh */
+                        <Link
+                          key={item.label}
+                          to={item.to}
+                          onClick={closeAll}
+                          className="group/cell col-span-2 relative min-h-[108px] bg-[#fffdfa] p-[16px] no-underline transition-colors hover:bg-blue"
+                        >
+                          <span className="font-mono text-[0.6rem] font-medium text-blue transition-colors group-hover/cell:text-paper">0{i + 1}</span>
+                          <strong className="mt-[16px] block text-[1.3rem] leading-[0.9] font-extrabold uppercase tracking-[-0.05em] text-ink transition-colors group-hover/cell:text-paper">
+                            {item.label}
+                          </strong>
+                          <small className="mt-[7px] block text-[0.62rem] leading-[1.4] text-[#555] transition-colors group-hover/cell:text-paper/90">{item.desc}</small>
+                          <b className="absolute top-[15px] right-[16px] text-[1.15rem] font-normal text-ink transition-transform duration-300 group-hover/cell:translate-x-1 group-hover/cell:-translate-y-1 group-hover/cell:text-paper">
+                            ↗
+                          </b>
+                        </Link>
+                      ) : item.to ? (
+                        /* Kartu link biasa (Lab) — satu sel */
+                        <Link
+                          key={item.label}
+                          to={item.to}
+                          onClick={closeAll}
+                          className={`group/cell relative min-h-[108px] border-t border-line bg-[#fffdfa] p-[16px] no-underline transition-colors hover:bg-blue ${
+                            i % 2 === 0 ? 'border-l border-line' : ''
+                          }`}
+                        >
+                          <span className="font-mono text-[0.6rem] font-medium text-blue transition-colors group-hover/cell:text-paper">0{i + 1}</span>
+                          <strong className="mt-[16px] block text-[1.1rem] leading-[0.9] font-extrabold uppercase tracking-[-0.05em] text-ink transition-colors group-hover/cell:text-paper">
+                            {item.label}
+                          </strong>
+                          <small className="mt-[7px] block text-[0.62rem] leading-[1.4] text-[#555] transition-colors group-hover/cell:text-paper/90">{item.desc}</small>
+                          <b className="absolute top-[15px] right-[16px] text-[1.15rem] font-normal text-ink transition-transform duration-300 group-hover/cell:translate-x-1 group-hover/cell:-translate-y-1 group-hover/cell:text-paper">
+                            ↗
+                          </b>
+                        </Link>
+                      ) : (
+                        <span
+                          key={item.label}
+                          title="Segera hadir"
+                          className={`relative min-h-[108px] border-t border-line bg-[#fffdfa] p-[16px] ${
+                            i % 2 === 0 ? 'border-l border-line' : ''
+                          }`}
+                        >
+                          <span className="font-mono text-[0.6rem] font-medium text-blue">0{i + 1}</span>
+                          <strong className="mt-[16px] block text-[1.1rem] leading-[0.9] font-extrabold uppercase tracking-[-0.05em] text-ink">
+                            {item.label}
+                          </strong>
+                          <small className="mt-[7px] block text-[0.62rem] leading-[1.4] text-[#555]">{item.desc}</small>
+                          <small className="absolute top-[15px] right-[16px] font-mono text-[0.5rem] font-medium uppercase tracking-[0.12em] text-blue">
+                            {item.tag}
+                          </small>
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </nav>
+
+      {/* CTA + pilihan bahasa (desktop) */}
+      <div className="flex items-center gap-[24px] max-[700px]:hidden">
+        <Link
+          to="/#contact"
+          className={`font-mono text-[0.7rem] font-medium uppercase no-underline transition-colors ${navColor}`}
+        >
+          {t('nav.cta')} <span className="ml-[10px] text-[1.05rem]">↗</span>
+        </Link>
+        <LangSwitch onDark={onDark} />
+      </div>
+
+      {/* Tombol hamburger (mobile) */}
+      <button
+        type="button"
+        aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'}
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen((open) => !open)}
+        className="hidden cursor-pointer border-0 bg-transparent max-[700px]:flex max-[700px]:flex-col max-[700px]:gap-[5px]"
+      >
+        <i
+          aria-hidden="true"
+          className={`block w-6 border-t transition-transform duration-300 ${
+            onDark ? 'border-paper' : 'border-ink'
+          } ${menuOpen ? 'max-[700px]:translate-y-[3px] max-[700px]:rotate-45' : ''}`}
+        />
+        <i
+          aria-hidden="true"
+          className={`block w-6 border-t transition-transform duration-300 ${
+            onDark ? 'border-paper' : 'border-ink'
+          } ${menuOpen ? 'max-[700px]:-translate-y-[3px] max-[700px]:-rotate-45' : ''}`}
+        />
+      </button>
+
+      {/* Dropdown mobile menu (animated) */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            key="mobile-nav"
+            aria-label="Menu mobile"
+            initial={{ opacity: 0, y: reduce ? 0 : -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: reduce ? 0 : -10 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="absolute top-[72px] right-0 left-0 m-0 hidden flex-col gap-[18px] border-b border-line bg-paper px-[6vw] py-6 max-[700px]:flex"
+          >
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={closeAll}
+                className="font-mono text-[0.8rem] font-medium uppercase text-ink no-underline transition-colors hover:text-blue"
+              >
+                {t(`nav.${link.key}`)}
+              </Link>
+            ))}
+
+            <div className="mt-[6px] border-t border-line pt-[18px]">
+              <span className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.1em] text-[#999]">
+                {t('nav.other')}
+              </span>
+              <div className="mt-[12px] flex flex-col gap-[8px]">
+                {MORE_ITEMS.map((item) =>
+                  item.to ? (
+                    <Link
+                      key={item.label}
+                      to={item.to}
+                      onClick={closeAll}
+                      className="flex items-center justify-between rounded-full bg-ink px-[18px] py-[11px] font-mono text-[0.78rem] font-medium uppercase text-paper no-underline"
+                    >
+                      {item.label} <span className="text-acid">✳</span>
+                    </Link>
+                  ) : (
+                    <span
+                      key={item.label}
+                      className="flex cursor-default items-center justify-between rounded-full border border-ink/25 px-[18px] py-[11px] font-mono text-[0.78rem] font-medium uppercase text-[#999]"
+                    >
+                      {item.label} <small className="text-[0.55rem] tracking-[0.12em] text-blue">{item.tag}</small>
+                    </span>
+                  ),
+                )}
+              </div>
+            </div>
+
+            {/* Pilihan bahasa (mobile) */}
+            <div className="mt-[6px] flex items-center justify-between border-t border-line pt-[18px]">
+              <span className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.1em] text-[#999]">Language</span>
+              <LangSwitch />
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </motion.header>
+  )
+}

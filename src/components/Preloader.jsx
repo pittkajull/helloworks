@@ -4,11 +4,67 @@ import Mascot from './Mascot'
 
 const STORAGE_KEY = 'hw-preloader-seen'
 
+/* Area tiap huruf "helloworks" (fraksi lebar 0..1) buat animasi per-huruf.
+   SVG aslinya satu path utuh, jadi kita slice pakai clip-path — band tiap
+   huruf sengaja di-overlap sedikit biar gak ada garis tipis di sambungan. */
+const LETTERS = [
+  { s: 0.015, e: 0.095 }, // h
+  { s: 0.13, e: 0.215 }, // e
+  { s: 0.215, e: 0.3 }, // l
+  { s: 0.28, e: 0.357 }, // l
+  { s: 0.36, e: 0.456 }, // o
+  { s: 0.5, e: 0.596 }, // w
+  { s: 0.64, e: 0.736 }, // o
+  { s: 0.74, e: 0.837 }, // r
+  { s: 0.836, e: 0.933 }, // k
+  { s: 0.92, e: 1 }, // s
+]
+
+/**
+ * Logo SVG "helloworks" dengan reveal per-huruf: tiap huruf di-clip ke
+ * band-nya sendiri lalu naik + fade-in berurutan kiri→kanan, diakhiri
+ * titik acid "helloworks." yang pop dengan spring.
+ */
+function LogoReveal({ className = '' }) {
+  return (
+    <div className={`relative ${className}`}>
+      {/* Lapis dasar: cuma nentuin ukuran layout (transparan) */}
+      <img
+        src="/images/logo putih no background.svg"
+        alt="HelloWorks"
+        className="h-full w-auto opacity-0"
+      />
+      {LETTERS.map((seg, i) => (
+        <motion.img
+          key={i}
+          src="/images/logo putih no background.svg"
+          alt=""
+          aria-hidden="true"
+          className="absolute top-0 left-0 h-full w-auto"
+          style={{ clipPath: `inset(0 ${100 - seg.e * 100}% 0 ${seg.s * 100}%)` }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 + i * 0.055, duration: 0.35, ease: 'easeOut' }}
+        />
+      ))}
+      {/* Titik acid "helloworks." */}
+      <motion.span
+        aria-hidden="true"
+        className="absolute rounded-full bg-acid"
+        style={{ left: 'calc(100% + 4px)', top: '82%', width: 5, height: 5 }}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 420, damping: 11, delay: 0.9 + LETTERS.length * 0.055 }}
+      />
+    </div>
+  )
+}
+
 /**
  * Preloader "Never stop building" — muncul sekali per sesi.
- * Urutan: maskot pop-in (sudah otomatis melambai & kedip) → logo wordmark
- * fade-in di bawahnya → progress bar acid mengisi → seluruh overlay
- * slide ke atas memberi jalan ke halaman.
+ * Urutan: maskot pop-in (sudah otomatis melambai & kedip) → logo SVG
+ * muncul per-huruf di bawahnya → progress bar acid mengisi → seluruh
+ * overlay slide ke atas memberi jalan ke halaman.
  * Di-skip untuk prefers-reduced-motion & sesi berikutnya (sessionStorage).
  */
 export default function Preloader() {
@@ -55,18 +111,14 @@ export default function Preloader() {
             <Mascot speech="Never stop building" className="relative w-[190px] max-[700px]:w-[150px]" />
           </motion.div>
 
-          {/* 2. Logo wordmark muncul setelah maskot */}
+          {/* 2. Logo SVG muncul per-huruf setelah maskot */}
           <motion.div
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.85, duration: 0.55, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.75, duration: 0.3 }}
             className="mt-[46px] max-[700px]:mt-[36px]"
           >
-            <img
-              src="/images/logo putih no background.png"
-              alt="HelloWorks"
-              className="h-[30px] w-auto max-[700px]:h-[24px]"
-            />
+            <LogoReveal className="h-[30px] w-[52.5px] max-[700px]:h-[24px] max-[700px]:w-[42px]" />
           </motion.div>
 
           {/* 3. Progress bar mono */}

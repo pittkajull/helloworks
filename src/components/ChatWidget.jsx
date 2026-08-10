@@ -68,6 +68,7 @@ export default function ChatWidget() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null) // 'no-key' | 'rate-limit' | 'generic'
+  const [status, setStatus] = useState('online') // 'online' | 'maintenance'
   const scrollRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -84,6 +85,23 @@ export default function ChatWidget() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, lang])
+
+  // Cek kesehatan server chat pas panel kebuka — status Online/Maintenance yang akurat
+  useEffect(() => {
+    if (!open) return
+    let cancelled = false
+    fetch('/api/health')
+      .then((r) => r.json())
+      .then((d) => {
+        if (!cancelled) setStatus(d?.ok && d?.hasKey ? 'online' : 'maintenance')
+      })
+      .catch(() => {
+        if (!cancelled) setStatus('maintenance')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [open])
 
   // Auto-scroll ke pesan terbaru + fokus input pas panel kebuka
   useEffect(() => {
@@ -114,6 +132,7 @@ export default function ChatWidget() {
           return copy
         })
       })
+      setStatus('online') // berhasil — normal lagi
     } catch (e) {
       // Belum keisi sama sekali → buang bubble kosong; udah keisi parsial → biarin
       setMessages((m) => {
@@ -122,6 +141,7 @@ export default function ChatWidget() {
         return m
       })
       setError(e.message === 'no-key' ? 'no-key' : e.message === 'rate-limit' ? 'rate-limit' : 'generic')
+      setStatus('maintenance')
     } finally {
       setLoading(false)
     }
@@ -182,8 +202,14 @@ export default function ChatWidget() {
                     </span>
                   </p>
                   <p className="mt-[4px] flex items-center gap-[6px] font-mono text-[0.6rem] text-paper/60">
-                    <span className="size-[7px] rounded-full bg-acid shadow-[0_0_0_4px_rgba(217,248,91,0.2)]" />
-                    {t('chat.online')}
+                    <span
+                      className={`size-[7px] rounded-full transition-colors duration-300 ${
+                        status === 'online'
+                          ? 'bg-acid shadow-[0_0_0_4px_rgba(217,248,91,0.2)]'
+                          : 'bg-flame shadow-[0_0_0_4px_rgba(255,95,54,0.25)]'
+                      }`}
+                    />
+                    {status === 'online' ? t('chat.online') : t('chat.maintenance')}
                   </p>
                 </div>
                 <button

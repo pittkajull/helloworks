@@ -172,6 +172,7 @@ export const translations = {
     'chat.botName': 'Halo',
     'chat.subtitle': 'AI HelloWorks',
     'chat.online': 'Online',
+    'chat.maintenance': 'Maintenance',
     'chat.hi': 'Hai!',
     'chat.greeting':
       'Halo! Aku Halo, asisten HelloWorks.\nTanya aja santai soal layanan, tim, proses, atau harga.',
@@ -353,6 +354,7 @@ export const translations = {
     'chat.botName': 'Halo',
     'chat.subtitle': 'AI HelloWorks',
     'chat.online': 'Online',
+    'chat.maintenance': 'Maintenance',
     'chat.hi': 'Hi!',
     'chat.greeting':
       "Hi! I'm Halo, the HelloWorks assistant.\nAsk me anything about our services, team, process, or pricing.",

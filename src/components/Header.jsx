@@ -7,6 +7,8 @@ import {
   useScroll,
   useMotionValue,
   useMotionValueEvent,
+  useSpring,
+  useTransform,
 } from 'motion/react'
 import { EASE } from '../lib/motion'
 import { useLang } from '../lib/i18n.js'
@@ -57,27 +59,37 @@ export default function Header() {
     setMoreOpen(false)
   }
 
-  // Smart navbar scroll-linked: header TERPAKU 1:1 ke scroll (scrub) — TANPA
-  // spring & tanpa akumulasi delta. Posisi dihitung LANGSUNG dari scrollY:
-  //   y = -(scrollY - 140), dijepit 0..-100
-  // Transform update-nya 1:1 secepat rAF, jadi mustahil ketinggalan jari.
+  // Navbar hide/show arah scroll (pola kanonik Framer Motion):
+  //   - scroll ke bawah lewat 140px → header ilang (y: 0 → -100)
+  //   - scroll ke ATAS di kedalaman mana pun → header LANGSUNG muncul balik (y: -100 → 0)
+  //   - transisi 0↔-100 pakai spring ringan: target-nya STATIS (2 nilai),
+  //     bukan ngejar scroll tiap frame → tetap mulus, gak mungkin ngeleg.
   const { scrollY } = useScroll()
-  const hideOffset = useMotionValue(0)
+  const hidden = useMotionValue(false)
+  const y = useSpring(useTransform(hidden, [false, true], [0, -100]), {
+    stiffness: 500,
+    damping: 50,
+    mass: 0.9,
+  })
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setScrolled(latest > 24)
     if (menuOpen || moreOpen || reduce) {
-      hideOffset.set(0)
+      hidden.set(false)
       return
     }
-    // 140px pertama: nempel di atas. Lewat itu: ngikut scroll, ilang penuh di -100.
-    hideOffset.set(Math.max(-100, Math.min(0, 140 - latest)))
+    const prev = scrollY.getPrevious() ?? 0
+    if (latest > prev && latest > 140) {
+      hidden.set(true) // turun: sembunyi
+    } else if (latest < prev) {
+      hidden.set(false) // naik: muncul balik
+    }
   })
 
   // Tutup dropdown & menu mobile kalau pindah halaman + pastikan header kebuka
   useEffect(() => {
     closeAll()
-    hideOffset.set(0)
+    hidden.set(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
@@ -125,7 +137,7 @@ export default function Header() {
 
   return (
     <motion.header
-      style={{ y: reduce ? 0 : hideOffset }}
+      style={{ y: reduce ? 0 : y }}
       className={`fixed top-0 right-0 left-0 z-[50] h-[90px] border-b bg-ink px-[5vw] will-change-transform transition-[border-color,box-shadow] duration-300 max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
         scrolled ? 'border-paper/15 shadow-[0_10px_30px_rgba(0,0,0,0.35)]' : 'border-paper/10'
       }`}

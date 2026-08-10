@@ -372,14 +372,6 @@ export default function ChatWidget() {
               whileTap={reduce ? undefined : { scale: 0.94 }}
               className="relative cursor-pointer border-0 bg-transparent p-0"
             >
-              <motion.span
-                initial={{ opacity: 0, y: reduce ? 0 : 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: reduce ? 0 : 0.6, duration: 0.3 }}
-                className="absolute -top-[8px] right-[16px] rounded-full border border-ink bg-acid px-[11px] py-[4px] font-mono text-[0.62rem] font-bold uppercase text-ink shadow-[0_4px_10px_rgba(23,23,23,0.18)]"
-              >
-                {t('chat.hi')}
-              </motion.span>
               {/* Kepala maskot — mata ngikutin cursor + excited pas hover, tanpa lingkaran biar clean */}
               <MascotFace
                 excited={fabHover}

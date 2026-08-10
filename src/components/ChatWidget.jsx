@@ -2,7 +2,6 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { useLang } from '../lib/i18n.js'
 import { streamChat } from '../lib/chat.js'
-import Mascot from './Mascot'
 import MascotTyping from './MascotTyping'
 import MascotFace from './MascotFace'
 
@@ -374,7 +373,7 @@ export default function ChatWidget() {
               >
                 {t('chat.hi')}
               </motion.span>
-              <Mascot speech="" className="w-[88px] max-[700px]:w-[76px]" />
+              <MascotFace className="w-[64px] drop-shadow-[0_12px_20px_rgba(23,23,23,0.28)] max-[700px]:w-[56px]" />
             </motion.button>
           )}
         </AnimatePresence>

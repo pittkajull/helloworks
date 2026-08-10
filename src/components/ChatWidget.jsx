@@ -151,7 +151,7 @@ export default function ChatWidget() {
               role="dialog"
               aria-modal="true"
               aria-label={`${t('chat.botName')} — ${t('chat.subtitle')}`}
-              className="mb-[14px] flex h-[500px] max-h-[calc(100dvh-160px)] w-[372px] flex-col overflow-hidden border-2 border-ink bg-paper shadow-[0_30px_80px_rgba(23,23,23,0.35)] max-[700px]:h-[min(500px,calc(100dvh-140px))] max-[700px]:w-[min(372px,calc(100vw-24px))]"
+              className="flex h-[500px] max-h-[calc(100dvh-140px)] w-[372px] flex-col overflow-hidden border-2 border-ink bg-paper shadow-[0_30px_80px_rgba(23,23,23,0.35)] max-[700px]:h-[min(500px,calc(100dvh-120px))] max-[700px]:w-[min(372px,calc(100vw-24px))]"
             >
               {/* Aksen acid + garis ink atas */}
               <div className="relative h-[6px] shrink-0 bg-acid">
@@ -194,14 +194,14 @@ export default function ChatWidget() {
                   {messages.map((m, i) =>
                     m.role === 'user' ? (
                       <div key={i} className="flex justify-end">
-                        <div className="max-w-[85%] rounded-[18px] rounded-br-[5px] bg-ink px-[13px] py-[9px] text-[0.84rem] leading-[1.55] text-paper shadow-[0_2px_8px_rgba(23,23,23,0.18)]">
+                        <div className="max-w-[85%] rounded-[18px] rounded-br-[5px] bg-ink px-[14px] py-[10px] text-[0.84rem] leading-[1.55] text-paper shadow-[0_2px_8px_rgba(23,23,23,0.18)]">
                           {renderMessage(m.content)}
                         </div>
                       </div>
                     ) : (
                       <div key={i} className="flex items-end gap-[9px]">
                         <BotAvatar className="size-[30px]" />
-                        <div className="max-w-[85%] rounded-[18px] rounded-bl-[5px] border border-ink/10 bg-[#fffdfa] px-[13px] py-[9px] text-[0.84rem] leading-[1.55] text-ink shadow-[0_2px_8px_rgba(23,23,23,0.06)]">
+                        <div className="max-w-[85%] rounded-[18px] rounded-bl-[5px] border border-ink/10 bg-[#fffdfa] px-[14px] py-[10px] text-[0.84rem] leading-[1.55] text-ink shadow-[0_2px_8px_rgba(23,23,23,0.06)]">
                           {renderMessage(m.content)}
                         </div>
                       </div>
@@ -248,29 +248,27 @@ export default function ChatWidget() {
                 </div>
               </div>
 
-              {/* Pertanyaan cepat */}
-              {showSuggest && (
-                <div className="shrink-0 px-[14px] pt-[2px] pb-[8px]">
-                  <p className="mb-[7px] font-mono text-[0.55rem] font-medium uppercase tracking-[0.14em] text-ink/40">
-                    {t('chat.suggestLabel')}
-                  </p>
-                  <div className="flex flex-wrap gap-[7px]">
-                    {suggestions.map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => send(s)}
-                        className="cursor-pointer rounded-full border border-ink/25 bg-transparent px-[12px] py-[7px] font-mono text-[0.62rem] font-medium text-ink/75 transition-colors hover:border-ink hover:bg-acid hover:text-ink"
-                      >
-                        {s}
-                      </button>
-                    ))}
+              {/* Footer: pertanyaan cepat + input + disclaimer — satu blok rapi */}
+              <div className="shrink-0 border-t border-ink/10 bg-[#efe9dc] px-[14px] pt-[11px] pb-[13px]">
+                {showSuggest && (
+                  <div className="mb-[10px]">
+                    <p className="mb-[7px] font-mono text-[0.55rem] font-medium uppercase tracking-[0.14em] text-ink/40">
+                      {t('chat.suggestLabel')}
+                    </p>
+                    <div className="flex flex-wrap gap-[7px]">
+                      {suggestions.map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => send(s)}
+                          className="cursor-pointer rounded-full border border-ink/25 bg-[#fffdfa] px-[12px] py-[7px] font-mono text-[0.62rem] font-medium text-ink/75 transition-colors hover:border-ink hover:bg-acid hover:text-ink"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* Input + disclaimer */}
-              <div className="shrink-0 border-t border-ink/10 bg-[#f0ebdf] px-[14px] pt-[12px] pb-[13px]">
+                )}
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -311,28 +309,35 @@ export default function ChatWidget() {
           )}
         </AnimatePresence>
 
-        {/* ===== Tombol maskot ===== */}
-        <motion.button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          aria-label={open ? 'Tutup chat' : 'Buka chat HelloWorks'}
-          whileHover={reduce ? undefined : { scale: 1.05 }}
-          whileTap={reduce ? undefined : { scale: 0.94 }}
-          className="relative cursor-pointer border-0 bg-transparent p-0"
-        >
+        {/* ===== Tombol maskot — disembunyiin pas panel kebuka biar gak dobel & rame ===== */}
+        <AnimatePresence>
           {!open && (
-            <motion.span
-              initial={{ opacity: 0, y: reduce ? 0 : 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: reduce ? 0 : 0.6, duration: 0.3 }}
-              className="absolute -top-[8px] right-[16px] rounded-full border border-ink bg-acid px-[11px] py-[4px] font-mono text-[0.62rem] font-bold uppercase text-ink shadow-[0_4px_10px_rgba(23,23,23,0.18)]"
+            <motion.button
+              key="chat-fab"
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-expanded={false}
+              aria-label="Buka chat HelloWorks"
+              initial={{ opacity: 0, scale: reduce ? 1 : 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: reduce ? 1 : 0.8 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              whileHover={reduce ? undefined : { scale: 1.05 }}
+              whileTap={reduce ? undefined : { scale: 0.94 }}
+              className="relative cursor-pointer border-0 bg-transparent p-0"
             >
-              {t('chat.hi')}
-            </motion.span>
+              <motion.span
+                initial={{ opacity: 0, y: reduce ? 0 : 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: reduce ? 0 : 0.6, duration: 0.3 }}
+                className="absolute -top-[8px] right-[16px] rounded-full border border-ink bg-acid px-[11px] py-[4px] font-mono text-[0.62rem] font-bold uppercase text-ink shadow-[0_4px_10px_rgba(23,23,23,0.18)]"
+              >
+                {t('chat.hi')}
+              </motion.span>
+              <Mascot speech="" className="w-[88px] max-[700px]:w-[76px]" />
+            </motion.button>
           )}
-          <Mascot speech="" className="w-[88px] max-[700px]:w-[76px]" />
-        </motion.button>
+        </AnimatePresence>
       </motion.div>
     </div>
   )

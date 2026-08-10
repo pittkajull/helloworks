@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { useLang } from '../lib/i18n.js'
-import { sendChat } from '../lib/chat.js'
+import { streamChat } from '../lib/chat.js'
 import Mascot from './Mascot'
 import MascotTyping from './MascotTyping'
 
@@ -108,20 +108,38 @@ export default function ChatWidget() {
   const send = async (text) => {
     const content = (text ?? input).trim()
     if (!content || loading) return
-    const next = [...messages, { role: 'user', content }]
-    setMessages(next)
+    const history = [...messages, { role: 'user', content }]
+    // Placeholder bubble kosong — bakal keisi per-chunk pas jawaban ngetik masuk
+    setMessages([...history, { role: 'assistant', content: '' }])
     setInput('')
     setError(null)
     setLoading(true)
     try {
-      const reply = await sendChat(next, lang)
-      setMessages((m) => [...m, { role: 'assistant', content: reply }])
+      await streamChat(history, lang, (chunk) => {
+        setMessages((m) => {
+          if (!m.length) return m
+          const copy = [...m]
+          const last = copy[copy.length - 1]
+          copy[copy.length - 1] = { ...last, content: last.content + chunk }
+          return copy
+        })
+      })
     } catch (e) {
+      // Belum keisi sama sekali → buang bubble kosong; udah keisi parsial → biarin
+      setMessages((m) => {
+        const last = m[m.length - 1]
+        if (last && last.role === 'assistant' && !last.content) return m.slice(0, -1)
+        return m
+      })
       setError(e.message === 'no-key' ? 'no-key' : e.message === 'rate-limit' ? 'rate-limit' : 'generic')
     } finally {
       setLoading(false)
     }
   }
+
+  // Typing dots cuma muncul kalau masih nunggu delta pertama (bubble masih kosong)
+  const lastMsg = messages[messages.length - 1]
+  const showTyping = loading && (!lastMsg || (lastMsg.role === 'assistant' && lastMsg.content === ''))
 
   const errText =
     error === 'no-key' ? t('chat.errorNoKey') : error === 'rate-limit' ? t('chat.rateLimit') : t('chat.error')
@@ -191,8 +209,12 @@ export default function ChatWidget() {
               {/* Pesan — di-anchor ke bawah (mt-auto), jadi gak "nggantung" di atas */}
               <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px]">
                 <div className="mt-auto flex flex-col gap-[12px]">
-                  {messages.map((m, i) =>
-                    m.role === 'user' ? (
+                  {messages.map((m, i) => {
+                    // Bubble placeholder yang lagi keisi stream — jangan render kosong
+                    const isStreamingEmpty =
+                      loading && i === messages.length - 1 && m.role === 'assistant' && m.content === ''
+                    if (isStreamingEmpty) return null
+                    return m.role === 'user' ? (
                       <div key={i} className="flex justify-end">
                         <div className="max-w-[85%] rounded-[18px] rounded-br-[5px] bg-ink px-[14px] py-[10px] text-[0.84rem] leading-[1.55] text-paper shadow-[0_2px_8px_rgba(23,23,23,0.18)]">
                           {renderMessage(m.content)}
@@ -205,11 +227,11 @@ export default function ChatWidget() {
                           {renderMessage(m.content)}
                         </div>
                       </div>
-                    ),
-                  )}
+                    )
+                  })}
 
-                  {/* Typing indicator */}
-                  {loading && (
+                  {/* Typing indicator — cuma pas nunggu delta pertama */}
+                  {showTyping && (
                     <div className="flex items-end gap-[9px]">
                       <BotAvatar className="size-[30px]" />
                       <div

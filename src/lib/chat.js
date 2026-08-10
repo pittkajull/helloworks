@@ -1,15 +1,19 @@
 /**
  * Client chatbot — ngobrol sama proxy server (/api/chat).
  * API key gak pernah ada di frontend; semua logika & "training" ada di server.
+ *
+ * Server balikin jawaban AI sebagai STREAM teks polos — client baca per-chunk
+ * dan nampilin efek ngetik, biar user gak nunggu diam-diam.
  */
 
 /**
- * Kirim riwayat pesan ke proxy, dapet balasan asisten.
+ * Kirim riwayat pesan ke proxy & stream jawabannya.
  * @param {{ role: 'user'|'assistant', content: string }[]} messages
  * @param {'id'|'en'} lang
- * @returns {Promise<string>} balasan AI
+ * @param {(chunk: string) => void} [onDelta] dipanggil tiap ada potongan teks baru
+ * @returns {Promise<string>} full jawaban (setelah stream kelar)
  */
-export async function sendChat(messages, lang) {
+export async function streamChat(messages, lang, onDelta) {
   let res
   try {
     res = await fetch('/api/chat', {
@@ -21,19 +25,33 @@ export async function sendChat(messages, lang) {
     throw new Error('network')
   }
 
-  let data = {}
-  try {
-    data = await res.json()
-  } catch {
-    /* body bukan JSON — biarkan data kosong */
-  }
-
   if (!res.ok) {
+    let data = {}
+    try {
+      data = await res.json()
+    } catch {
+      /* body bukan JSON — biarkan data kosong */
+    }
     throw new Error(data?.error?.code || `http-${res.status}`)
   }
-  const reply = data?.reply
-  if (typeof reply !== 'string' || !reply.trim()) {
-    throw new Error('empty')
+
+  if (!res.body) throw new Error('empty')
+
+  const reader = res.body.getReader()
+  const decoder = new TextDecoder()
+  let full = ''
+
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    const text = decoder.decode(value, { stream: true })
+    if (text) {
+      full += text
+      onDelta?.(text)
+    }
   }
-  return reply.trim()
+  full += decoder.decode() // flush sisa byte
+
+  if (!full.trim()) throw new Error('empty')
+  return full
 }

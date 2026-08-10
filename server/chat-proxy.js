@@ -250,7 +250,8 @@ async function handleChat(req, res) {
   }
 
   const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), 90_000)
+  // 90s buat nunggu response header (koneksi hang), lalu jadi watchdog stall
+  let timer = setTimeout(() => controller.abort(), 90_000)
 
   try {
     const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -266,29 +267,71 @@ async function handleChat(req, res) {
         messages: [{ role: 'system', content: buildSystemPrompt(lang) }, ...messages],
         temperature: 0.7,
         max_tokens: 500,
-        stream: false,
+        stream: true,
       }),
       signal: controller.signal,
     })
 
-    const data = await r.json().catch(() => ({}))
     if (!r.ok) {
+      const data = await r.json().catch(() => ({}))
       console.error('[chat] upstream error', r.status, String(data?.error?.message || '').slice(0, 200))
       return sendJson(res, 502, {
         error: { code: 'upstream', message: 'Layanan AI lagi sibuk — coba lagi ya.' },
       })
     }
 
-    let reply = data?.choices?.[0]?.message?.content
-    if (!reply) {
-      return sendJson(res, 502, {
-        error: { code: 'upstream', message: 'Layanan AI gak balas — coba lagi ya.' },
-      })
+    // Stream udah mulai — ganti jadi watchdog "first byte": kalau >60s mandek
+    // gak ngirim data sama sekali, abort biar socket gak nggantung selamanya.
+    clearTimeout(timer)
+    timer = setTimeout(() => controller.abort(), 60_000)
+
+    // Streaming: terusin delta OpenRouter ke client sebagai TEKS POLOS.
+    // Error/setup gagal tetap JSON; begitu di sini, client dapet teks yang ngetik-ngetik.
+    res.writeHead(200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'X-Accel-Buffering': 'no', // biar nginx/proxy gak nge-buffer jawaban
+    })
+
+    const decoder = new TextDecoder()
+    let buf = ''
+    try {
+      for await (const chunk of r.body) {
+        buf += decoder.decode(chunk, { stream: true })
+        let idx
+        while ((idx = buf.indexOf('\n')) !== -1) {
+          const line = buf.slice(0, idx).trim()
+          buf = buf.slice(idx + 1)
+          if (!line.startsWith('data:')) continue
+          const data = line.slice(5).trim()
+          if (data === '[DONE]') {
+            res.end()
+            return
+          }
+          try {
+            const j = JSON.parse(data)
+            const delta = j?.choices?.[0]?.delta?.content
+            // Jaring pengaman anti-emoji per delta
+            if (delta) res.write(delta.replace(EMOJI_RE, ''))
+          } catch {
+            /* abaikan baris SSE yang gak valid */
+          }
+        }
+      }
+    } catch (err) {
+      console.error('[chat] stream error', err.message)
     }
-    // Jaring pengaman: hapus emoji kalau model tetap nyelonong (prompt aja gak 100% patuh)
-    reply = reply.replace(EMOJI_RE, '').replace(/\s{2,}/g, ' ').trim()
-    return sendJson(res, 200, { reply })
+    res.end()
   } catch (err) {
+    if (res.headersSent) {
+      // Stream udah mulai tapi putus di tengah — tutup aja (client dapet jawaban parsial)
+      try {
+        res.end()
+      } catch {
+        /* ignore */
+      }
+      return
+    }
     if (err.name === 'AbortError') {
       return sendJson(res, 504, { error: { code: 'timeout', message: 'Layanan AI kelamaan — coba lagi ya.' } })
     }

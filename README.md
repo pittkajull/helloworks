@@ -40,6 +40,10 @@ npm run dev                 # terminal 2 — frontend (http://localhost:5173)
 > ⚠️ `.env` tidak ikut di-commit (sudah di `.gitignore`). Jangan pernah taruh API key
 > di file frontend (`src/`) — itu bakal ke-commit & kebaca siapa pun.
 
+> 💡 Jawaban chatbot **streaming** (efek ngetik). Kalau di produksi efek ngetiknya
+gelondot, berarti reverse-proxy (Apache `mod_proxy`/Laragon) nge-buffer jawabannya —
+aktifkan flush/chunked di proxy-nya. `X-Accel-Buffering: no` cuma kepake di nginx.
+
 ## Bahasa (i18n)
 
 Website mendukung **2 bahasa**: **Indonesia** (default) & **English** — bisa diganti lewat toggle

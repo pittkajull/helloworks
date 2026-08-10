@@ -2,6 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { useLang } from '../lib/i18n.js'
 import { streamChat } from '../lib/chat.js'
+import { playPop } from '../lib/sound.js'
 import MascotTyping from './MascotTyping'
 import MascotFace from './MascotFace'
 
@@ -68,6 +69,7 @@ export default function ChatWidget() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null) // 'no-key' | 'rate-limit' | 'generic'
   const [status, setStatus] = useState('online') // 'online' | 'maintenance'
+  const [fabHover, setFabHover] = useState(false) // hover tombol → maskot excited
   const scrollRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -354,7 +356,12 @@ export default function ChatWidget() {
             <motion.button
               key="chat-fab"
               type="button"
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                playPop()
+                setOpen(true)
+              }}
+              onMouseEnter={() => setFabHover(true)}
+              onMouseLeave={() => setFabHover(false)}
               aria-expanded={false}
               aria-label="Buka chat HelloWorks"
               initial={{ opacity: 0, scale: reduce ? 1 : 0.8 }}
@@ -373,8 +380,11 @@ export default function ChatWidget() {
               >
                 {t('chat.hi')}
               </motion.span>
-              {/* Kepala maskot — mata ngikutin cursor, tanpa lingkaran biar clean */}
-              <MascotFace className="w-[64px] drop-shadow-[0_12px_20px_rgba(23,23,23,0.28)] max-[700px]:w-[56px]" />
+              {/* Kepala maskot — mata ngikutin cursor + excited pas hover, tanpa lingkaran biar clean */}
+              <MascotFace
+                excited={fabHover}
+                className="w-[64px] drop-shadow-[0_12px_20px_rgba(23,23,23,0.28)] max-[700px]:w-[56px]"
+              />
             </motion.button>
           )}
         </AnimatePresence>

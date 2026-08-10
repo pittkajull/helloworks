@@ -85,16 +85,17 @@ export default function Mascot({ className = '', speech = "Let's build!" }) {
         <circle cx="82" cy="146" r="5" fill={ACID} />
         <circle cx="138" cy="146" r="5" fill={ACID} />
 
-        {/* Mata — follow kursor + kedip */}
-        <motion.g style={{ x: pupilX, y: pupilY }}>
-          <motion.g
-            animate={reduce ? undefined : { scaleY: [1, 1, 0.08, 1] }}
-            transition={{ duration: 4.2, times: [0, 0.93, 0.96, 1], repeat: Infinity, ease: 'easeInOut' }}
-            style={{ originX: 0.5, originY: 0.5, transformBox: 'fill-box' }}
-          >
-            <ellipse cx="98" cy="128" rx="11" ry="12" fill={PAPER} />
+        {/* Mata — putihnya DIAM, cuma bola hitam yang lirik kursor. Kedip squash
+            grup luar (putih + bola) biar nutup rapi; x/y bola komposisi sama scaleY. */}
+        <motion.g
+          animate={reduce ? undefined : { scaleY: [1, 1, 0.08, 1] }}
+          transition={{ duration: 4.2, times: [0, 0.93, 0.96, 1], repeat: Infinity, ease: 'easeInOut' }}
+          style={{ originX: 0.5, originY: 0.5, transformBox: 'fill-box' }}
+        >
+          <ellipse cx="98" cy="128" rx="11" ry="12" fill={PAPER} />
+          <ellipse cx="122" cy="128" rx="11" ry="12" fill={PAPER} />
+          <motion.g style={{ x: pupilX, y: pupilY }}>
             <circle cx="98" cy="128" r="4.5" fill={INK} />
-            <ellipse cx="122" cy="128" rx="11" ry="12" fill={PAPER} />
             <circle cx="122" cy="128" r="4.5" fill={INK} />
           </motion.g>
         </motion.g>

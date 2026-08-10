@@ -1,6 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useScroll,
+  useMotionValue,
+  useSpring,
+  useMotionValueEvent,
+} from 'motion/react'
 import { EASE } from '../lib/motion'
 import { useLang } from '../lib/i18n.js'
 
@@ -40,7 +48,6 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [hidden, setHidden] = useState(false)
   const [active, setActive] = useState(null)
   const reduce = useReducedMotion()
   const { pathname } = useLocation()
@@ -51,33 +58,32 @@ export default function Header() {
     setMoreOpen(false)
   }
 
-  // Tutup dropdown & menu mobile kalau pindah halaman
+  // Smart navbar buttery: y digerakkan LANGSUNG oleh scroll velocity lewat
+  // useScroll + useSpring (bukan state boolean + tween kaku). Header jadi
+  // 'scrub' mulus — ikut kecepatan jari pas scroll, bukan nge-pop 0.45s.
+  const { scrollY } = useScroll()
+  const hideOffset = useMotionValue(0)
+  const springOffset = useSpring(hideOffset, { stiffness: 300, damping: 30, restDelta: 0.5 })
+  const lastY = useRef(0)
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    const prev = lastY.current
+    setScrolled(latest > 24)
+    if (menuOpen || moreOpen) {
+      lastY.current = latest
+      return
+    }
+    if (latest > prev && latest > 140) hideOffset.set(reduce ? 0 : -100)
+    else if (latest < prev || latest < 140) hideOffset.set(0)
+    lastY.current = latest
+  })
+
+  // Tutup dropdown & menu mobile kalau pindah halaman + pastikan header kebuka
   useEffect(() => {
     closeAll()
-    setHidden(false)
+    hideOffset.set(0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
-
-  // Smart navbar: ilang pas scroll ke bawah, muncul lagi pas scroll ke atas.
-  // Tetap nempel di atas hero (belum lewat 140px) dan kalau menu/dropdown kebuka.
-  useEffect(() => {
-    let lastY = window.scrollY
-    const onScroll = () => {
-      const y = window.scrollY
-      setScrolled(y > 24)
-      if (menuOpen || moreOpen) {
-        lastY = y
-        return
-      }
-      if (y > lastY && y > 140) setHidden(true)
-      else if (y < lastY || y < 140) setHidden(false)
-      lastY = y
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [menuOpen, moreOpen])
 
   const otherActive = moreOpen || active === 'other'
 
@@ -123,13 +129,18 @@ export default function Header() {
 
   return (
     <motion.header
-      initial={{ y: reduce ? 0 : -90, opacity: 0 }}
-      animate={{ y: hidden ? (reduce ? 0 : '-100%') : 0, opacity: 1 }}
-      transition={{ duration: 0.45, ease: EASE }}
-      className={`fixed top-0 right-0 left-0 z-[50] flex h-[90px] items-center justify-between border-b bg-ink px-[5vw] transition-[border-color,box-shadow] duration-300 max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
+      style={{ y: reduce ? 0 : springOffset }}
+      className={`fixed top-0 right-0 left-0 z-[50] h-[90px] border-b bg-ink px-[5vw] transition-[border-color,box-shadow] duration-300 max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
         scrolled ? 'border-paper/15 shadow-[0_10px_30px_rgba(0,0,0,0.35)]' : 'border-paper/10'
       }`}
     >
+      {/* Wrapper entrance: slide-down sekali di load. y scroll dikontrol spring di header (luar) */}
+      <motion.div
+        initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : -90 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: EASE }}
+        className="flex h-full w-full items-center justify-between"
+      >
       {/* Logo */}
       <Link
         to="/"
@@ -323,6 +334,8 @@ export default function Header() {
           }`}
         />
       </button>
+
+      </motion.div>
 
       {/* Dropdown mobile menu (animated) */}
       <AnimatePresence>

@@ -41,6 +41,7 @@ export default function Header() {
   const [moreOpen, setMoreOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
+  const [active, setActive] = useState(null)
   const reduce = useReducedMotion()
   const { pathname } = useLocation()
   const { t } = useLang()
@@ -81,7 +82,35 @@ export default function Header() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuOpen, moreOpen])
 
-  const navColor = onDark ? 'text-paper hover:text-acid' : 'text-ink hover:text-blue'
+  const otherActive = moreOpen || active === 'other'
+
+  // Tab aktif ikut posisi scroll (hanya di landing)
+  useEffect(() => {
+    if (pathname !== '/') return
+    const els = ['about', 'services', 'values']
+      .map((id) => document.getElementById(id))
+      .filter(Boolean)
+    if (!els.length) return
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id)
+        })
+      },
+      { rootMargin: '-30% 0px -60% 0px', threshold: 0 },
+    )
+    els.forEach((el) => obs.observe(el))
+    return () => obs.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
+
+  // Halaman non-landing → petakan ke tab yang relevan
+  useEffect(() => {
+    if (pathname === '/') setActive(null)
+    else if (pathname.startsWith('/services')) setActive('services')
+    else if (pathname === '/team' || pathname === '/lab' || pathname === '/playbook') setActive('other')
+    else setActive(null)
+  }, [pathname])
 
   // Dropdown "Other" — Team & Lab beneran (featured = kartu bentang penuh), sisanya placeholder (soon)
   const MORE_ITEMS = [
@@ -125,35 +154,54 @@ export default function Header() {
         aria-label="Navigasi utama"
         className="flex flex-1 items-center justify-center gap-9 max-[900px]:gap-5 max-[700px]:hidden"
       >
-        {NAV_LINKS.map((link) => (
-          <Link
-            key={link.to}
-            to={link.to}
-            className={`group relative font-mono text-[0.7rem] font-medium uppercase no-underline transition-all duration-300 hover:-translate-y-[1px] max-[900px]:text-[0.62rem] ${navColor}`}
-          >
-            {t(`nav.${link.key}`)}
-            <span
-              aria-hidden="true"
-              className="absolute -right-[18px] top-1/2 -translate-y-1/2 translate-x-[3px] text-[1.05rem] opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
-            >
-              ↗
-            </span>
-          </Link>
-        ))}
+        {/* Kelompok tab segmented — tab aktif keblok ink + notch ala tiket */}
+        <div className="flex items-stretch">
+          {NAV_LINKS.map((link, i) => {
+            const isActive = active === link.key
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={closeAll}
+                className={`group relative flex items-center border border-ink/90 bg-paper px-[20px] py-[10px] font-mono text-[0.68rem] font-medium uppercase no-underline transition-colors duration-300 max-[900px]:px-[13px] max-[900px]:text-[0.6rem] ${
+                  i > 0 ? '-ml-px' : ''
+                } ${isActive ? 'notch-tab bg-ink text-paper' : 'text-ink hover:bg-ink/10'}`}
+              >
+                {isActive && (
+                  <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-acid" />
+                )}
+                <span className={`font-mono text-[0.55rem] font-medium ${isActive ? 'text-acid' : 'text-blue/80'}`}>
+                  0{i + 1}
+                </span>
+                <span className="ml-[7px]">{t(`nav.${link.key}`)}</span>
+              </Link>
+            )
+          })}
 
-        {/* Other + mega-menu dropdown */}
-        <div className="relative" onMouseEnter={() => setMoreOpen(true)} onMouseLeave={() => setMoreOpen(false)}>
+        {/* Other + mega-menu dropdown — clip-path notch HANYA di button, biar dropdown gak ke-clip */}
+        <div
+          className="relative -ml-px"
+          onMouseEnter={() => setMoreOpen(true)}
+          onMouseLeave={() => setMoreOpen(false)}
+        >
           <button
             type="button"
             aria-haspopup="true"
             aria-expanded={moreOpen}
             onClick={() => setMoreOpen((open) => !open)}
-            className={`group relative flex cursor-pointer items-center gap-[7px] border-0 bg-transparent p-0 font-mono text-[0.7rem] font-medium uppercase transition-all duration-300 hover:-translate-y-[1px] max-[900px]:text-[0.62rem] ${navColor}`}
+            className={`group relative flex cursor-pointer items-center gap-[7px] border border-ink/90 px-[20px] py-[10px] font-mono text-[0.68rem] font-medium uppercase transition-colors duration-300 max-[900px]:px-[13px] max-[900px]:text-[0.6rem] ${
+              otherActive ? 'notch-tab bg-ink text-paper' : 'bg-paper text-ink hover:bg-ink/10'
+            }`}
           >
-            {t('nav.other')}              <span
-                aria-hidden="true"
-                className={`text-[0.62rem] transition-transform duration-300 ${moreOpen ? 'rotate-180' : ''} ${onDark ? 'text-acid' : 'text-blue'}`}
-              >
+            {otherActive && <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-acid" />}
+            <span className={`font-mono text-[0.55rem] font-medium ${otherActive ? 'text-acid' : 'text-blue/80'}`}>04</span>
+            <span className="ml-[7px]">{t('nav.other')}</span>
+            <span
+              aria-hidden="true"
+              className={`ml-[7px] text-[0.6rem] transition-transform duration-300 ${moreOpen ? 'rotate-180' : ''} ${
+                otherActive ? 'text-acid' : 'text-blue/80'
+              }`}
+            >
               ▾
             </span>
           </button>
@@ -258,15 +306,14 @@ export default function Header() {
             )}
           </AnimatePresence>
         </div>
+        </div>
       </nav>
 
-      {/* CTA (tombol pil) + pilihan bahasa (desktop) */}
+      {/* CTA + pilihan bahasa (desktop) */}
       <div className="flex items-center gap-[18px] max-[900px]:gap-3 max-[700px]:hidden">
         <Link
           to="/#contact"
-          className={`group flex items-center gap-[9px] rounded-full px-[18px] py-[9px] font-mono text-[0.68rem] font-medium uppercase no-underline transition-colors duration-300 ${
-            onDark ? 'bg-paper text-ink hover:bg-acid' : 'bg-ink text-paper hover:bg-blue'
-          }`}
+          className="group flex items-center gap-[9px] bg-acid px-[20px] py-[10px] font-mono text-[0.68rem] font-medium uppercase text-ink no-underline transition-colors duration-300 hover:bg-blue hover:text-paper"
         >
           {t('nav.cta')}{' '}
           <span className="text-[1rem] transition-transform duration-300 group-hover:translate-x-[3px] group-hover:-translate-y-[3px]">

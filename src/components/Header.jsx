@@ -40,6 +40,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const reduce = useReducedMotion()
   const { pathname } = useLocation()
   const { t } = useLang()
@@ -55,16 +56,30 @@ export default function Header() {
   // Tutup dropdown & menu mobile kalau pindah halaman
   useEffect(() => {
     closeAll()
+    setHidden(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
-  // Backdrop glass pas scroll — biar nav tetep kebaca di atas konten
+  // Smart navbar: ilang pas scroll ke bawah, muncul lagi pas scroll ke atas.
+  // Tetap nempel di atas hero (belum lewat 140px) dan kalau menu/dropdown kebuka.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
+    let lastY = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 24)
+      if (menuOpen || moreOpen) {
+        lastY = y
+        return
+      }
+      if (y > lastY && y > 140) setHidden(true)
+      else if (y < lastY || y < 140) setHidden(false)
+      lastY = y
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [menuOpen, moreOpen])
 
   const navColor = onDark ? 'text-paper hover:text-acid' : 'text-ink hover:text-blue'
 
@@ -80,16 +95,16 @@ export default function Header() {
   return (
     <motion.header
       initial={{ y: reduce ? 0 : -90, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: EASE }}
-      className={`fixed top-[16px] left-1/2 z-[50] flex h-[64px] w-[min(1240px,calc(100vw-28px))] -translate-x-1/2 items-center justify-between rounded-full border px-[28px] shadow-[0_12px_32px_rgba(23,23,23,.08)] transition-[background-color,border-color,backdrop-filter] duration-300 max-[900px]:px-[22px] max-[700px]:top-[12px] max-[700px]:h-[56px] max-[700px]:w-[calc(100vw-24px)] max-[700px]:px-[20px] ${
+      animate={{ y: hidden ? (reduce ? 0 : '-100%') : 0, opacity: 1 }}
+      transition={{ duration: 0.45, ease: EASE }}
+      className={`fixed top-0 right-0 left-0 z-[50] flex h-[90px] items-center justify-between border-b px-[5vw] transition-[background-color,border-color,backdrop-filter] duration-300 max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
         onDark
           ? scrolled
-            ? 'border-paper/15 bg-ink/85 backdrop-blur-xl'
-            : 'border-paper/15 bg-ink/55 backdrop-blur-xl'
+            ? 'border-paper/15 bg-ink/85 backdrop-blur-md'
+            : 'border-paper/15'
           : scrolled
-            ? 'border-line bg-paper/85 backdrop-blur-xl'
-            : 'border-line bg-paper/55 backdrop-blur-xl'
+            ? 'border-line bg-paper/85 backdrop-blur-md'
+            : 'border-line'
       }`}
     >
       {/* Logo */}
@@ -97,7 +112,7 @@ export default function Header() {
         to="/"
         aria-label="HelloWorks home"
         onClick={closeAll}
-        className={`text-[1.3rem] font-extrabold tracking-[-0.08em] no-underline transition-colors ${
+        className={`text-[1.42rem] font-extrabold tracking-[-0.08em] no-underline transition-colors ${
           onDark ? 'text-paper' : 'text-ink'
         }`}
       >
@@ -293,7 +308,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: reduce ? 0 : -10 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="absolute top-[68px] right-0 left-0 m-0 hidden flex-col gap-[18px] rounded-[24px] border border-line bg-paper p-6 shadow-[0_24px_60px_rgba(23,23,23,.22)] max-[700px]:flex"
+            className="absolute top-[72px] right-0 left-0 m-0 hidden flex-col gap-[18px] border-b border-line bg-paper px-[6vw] py-6 max-[700px]:flex"
           >
             {NAV_LINKS.map((link) => (
               <Link

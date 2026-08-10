@@ -373,10 +373,8 @@ export default function ChatWidget() {
               >
                 {t('chat.hi')}
               </motion.span>
-              {/* Lingkaran paper + border ink — biar jelas ini tombol */}
-              <span className="block rounded-full border-2 border-ink bg-paper p-[10px] shadow-[0_14px_30px_rgba(23,23,23,0.28)] transition-colors duration-300 hover:border-acid hover:bg-[#fffdfa]">
-                <MascotFace className="w-[60px] max-[700px]:w-[52px]" />
-              </span>
+              {/* Kepala maskot — mata ngikutin cursor, tanpa lingkaran biar clean */}
+              <MascotFace className="w-[64px] drop-shadow-[0_12px_20px_rgba(23,23,23,0.28)] max-[700px]:w-[56px]" />
             </motion.button>
           )}
         </AnimatePresence>

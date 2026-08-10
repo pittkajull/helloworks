@@ -20,7 +20,7 @@ function renderInline(text) {
     }
     if (p.startsWith('`') && p.endsWith('`') && p.length > 2) {
       return (
-        <code key={i} className="rounded-[4px] bg-ink/10 px-[5px] py-[1px] font-mono text-[0.78em]">
+        <code key={i} className="rounded-[5px] bg-ink/10 px-[5px] py-[1px] font-mono text-[0.78em]">
           {p.slice(1, -1)}
         </code>
       )
@@ -39,8 +39,8 @@ function renderMessage(content) {
       <Fragment key={i}>
         {i > 0 && <br />}
         {bullet ? (
-          <span className="flex gap-[7px]">
-            <span aria-hidden="true" className="shrink-0 text-acid">
+          <span className="flex gap-[8px]">
+            <span aria-hidden="true" className="shrink-0 font-bold text-acid">
               ✦
             </span>
             <span>{renderInline(bullet[1])}</span>
@@ -53,10 +53,21 @@ function renderMessage(content) {
   })
 }
 
+/* Bubble kecil avatar maskot (dipakai tiap pesan bot + typing) */
+function BotAvatar({ className = '' }) {
+  return (
+    <div
+      className={`grid shrink-0 place-items-center rounded-full border-2 border-ink bg-paper p-[3px] shadow-[0_2px_6px_rgba(23,23,23,0.12)] ${className}`}
+    >
+      <Mascot className="w-full" />
+    </div>
+  )
+}
+
 /**
- * Chatbot HelloWorks — pengganti floating helper.
- * Maskot "Halo" jadi tombol; klik buka panel chat yang ngobrol sama AI
- * lewat proxy server (/api/chat) — API key aman di server, gak pernah di frontend.
+ * Chatbot HelloWorks — maskot "Halo" di pojok kanan bawah.
+ * Klik maskot buka panel chat yang ngobrol sama AI lewat proxy server
+ * (/api/chat) — API key aman di server, gak pernah di frontend.
  */
 export default function ChatWidget() {
   const reduce = useReducedMotion()
@@ -76,8 +87,7 @@ export default function ChatWidget() {
     return () => clearTimeout(id)
   }, [reduce])
 
-  // Pas pertama buka: kasih salam pembuka (ikut bahasa aktif — kalau user
-  // ganti ID/EN sebelum buka, salam ikut kebaca ulang di bahasa baru)
+  // Pas pertama buka: kasih salam pembuka (ikut bahasa aktif)
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ role: 'assistant', content: t('chat.greeting') }])
@@ -141,25 +151,30 @@ export default function ChatWidget() {
               role="dialog"
               aria-modal="true"
               aria-label={`${t('chat.botName')} — ${t('chat.subtitle')}`}
-              className="mb-[14px] flex h-[540px] w-[370px] flex-col overflow-hidden border border-ink bg-paper shadow-[0_24px_60px_rgba(23,23,23,0.28)] max-[700px]:h-[min(520px,calc(100dvh-140px))] max-[700px]:w-[min(370px,calc(100vw-28px))]"
+              className="mb-[14px] flex h-[500px] max-h-[calc(100dvh-160px)] w-[372px] flex-col overflow-hidden border-2 border-ink bg-paper shadow-[0_30px_80px_rgba(23,23,23,0.35)] max-[700px]:h-[min(500px,calc(100dvh-140px))] max-[700px]:w-[min(372px,calc(100vw-24px))]"
             >
-              {/* Aksen acid */}
-              <div className="h-[5px] shrink-0 bg-acid" />
+              {/* Aksen acid + garis ink atas */}
+              <div className="relative h-[6px] shrink-0 bg-acid">
+                <span className="absolute inset-x-0 bottom-0 h-px bg-ink/20" />
+              </div>
 
               {/* Header */}
-              <div className="flex shrink-0 items-center gap-[12px] bg-ink px-[16px] py-[11px] text-paper">
-                <div className="w-[46px] shrink-0">
-                  <MascotTyping className="w-[46px]" />
+              <div className="flex shrink-0 items-center gap-[13px] bg-ink px-[16px] py-[12px] text-paper">
+                <div className="relative w-[52px] shrink-0">
+                  <MascotTyping className="w-[52px]" />
+                  <span className="absolute -right-[1px] -bottom-[1px] size-[11px] rounded-full border-2 border-ink bg-acid" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="flex items-baseline gap-[8px] font-mono text-[0.85rem] font-bold uppercase tracking-[-0.02em]">
-                    {t('chat.botName')}
-                    <span className="text-[0.56rem] font-medium tracking-[0.08em] text-paper/45">
+                  <p className="flex items-baseline gap-[9px]">
+                    <span className="font-mono text-[1rem] font-extrabold uppercase tracking-[-0.02em]">
+                      {t('chat.botName')}
+                    </span>
+                    <span className="rounded-full bg-acid px-[7px] py-[2px] font-mono text-[0.5rem] font-bold uppercase tracking-[0.14em] text-ink">
                       {t('chat.subtitle')}
                     </span>
                   </p>
-                  <p className="mt-[3px] flex items-center gap-[6px] font-mono text-[0.6rem] text-paper/70">
-                    <span className="size-[7px] rounded-full bg-acid shadow-[0_0_0_4px_rgba(217,248,91,0.22)]" />
+                  <p className="mt-[4px] flex items-center gap-[6px] font-mono text-[0.6rem] text-paper/60">
+                    <span className="size-[7px] rounded-full bg-acid shadow-[0_0_0_4px_rgba(217,248,91,0.2)]" />
                     {t('chat.online')}
                   </p>
                 </div>
@@ -167,28 +182,26 @@ export default function ChatWidget() {
                   type="button"
                   aria-label="Tutup chat"
                   onClick={() => setOpen(false)}
-                  className="grid size-[32px] shrink-0 cursor-pointer place-items-center rounded-full border border-paper/25 text-[0.85rem] leading-none transition-colors hover:bg-paper hover:text-ink"
+                  className="grid size-[32px] shrink-0 cursor-pointer place-items-center rounded-full border border-paper/25 text-[0.85rem] leading-none transition-colors hover:border-acid hover:bg-acid hover:text-ink"
                 >
                   ✕
                 </button>
               </div>
 
-              {/* Pesan */}
+              {/* Pesan — di-anchor ke bawah (mt-auto), jadi gak "nggantung" di atas */}
               <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px]">
-                <div className="flex flex-col gap-[12px]">
+                <div className="mt-auto flex flex-col gap-[12px]">
                   {messages.map((m, i) =>
                     m.role === 'user' ? (
                       <div key={i} className="flex justify-end">
-                        <div className="max-w-[82%] bg-ink px-[12px] py-[9px] text-[0.84rem] leading-[1.55] text-paper">
+                        <div className="max-w-[85%] rounded-[18px] rounded-br-[5px] bg-ink px-[13px] py-[9px] text-[0.84rem] leading-[1.55] text-paper shadow-[0_2px_8px_rgba(23,23,23,0.18)]">
                           {renderMessage(m.content)}
                         </div>
                       </div>
                     ) : (
-                      <div key={i} className="flex items-end gap-[8px]">
-                        <div className="w-[26px] shrink-0">
-                          <Mascot className="w-[26px]" />
-                        </div>
-                        <div className="max-w-[82%] border border-line bg-[#fffdfa] px-[12px] py-[9px] text-[0.84rem] leading-[1.55] text-ink shadow-[0_2px_6px_rgba(23,23,23,0.05)]">
+                      <div key={i} className="flex items-end gap-[9px]">
+                        <BotAvatar className="size-[30px]" />
+                        <div className="max-w-[85%] rounded-[18px] rounded-bl-[5px] border border-ink/10 bg-[#fffdfa] px-[13px] py-[9px] text-[0.84rem] leading-[1.55] text-ink shadow-[0_2px_8px_rgba(23,23,23,0.06)]">
                           {renderMessage(m.content)}
                         </div>
                       </div>
@@ -197,19 +210,17 @@ export default function ChatWidget() {
 
                   {/* Typing indicator */}
                   {loading && (
-                    <div className="flex items-end gap-[8px]">
-                      <div className="w-[26px] shrink-0">
-                        <Mascot className="w-[26px]" />
-                      </div>
+                    <div className="flex items-end gap-[9px]">
+                      <BotAvatar className="size-[30px]" />
                       <div
                         aria-label={t('chat.thinking')}
-                        className="flex items-center gap-[5px] border border-line bg-[#fffdfa] px-[14px] py-[12px]"
+                        className="flex items-center gap-[6px] rounded-[18px] rounded-bl-[5px] border border-ink/10 bg-[#fffdfa] px-[16px] py-[13px] shadow-[0_2px_8px_rgba(23,23,23,0.06)]"
                       >
                         {[0, 1, 2].map((d) => (
                           <motion.span
                             key={d}
-                            className="size-[6px] rounded-full bg-blue"
-                            animate={reduce ? undefined : { y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+                            className="size-[7px] rounded-full bg-blue"
+                            animate={reduce ? undefined : { y: [0, -5, 0], opacity: [0.35, 1, 0.35] }}
                             transition={{ duration: 0.7, repeat: Infinity, delay: d * 0.15, ease: 'easeInOut' }}
                           />
                         ))}
@@ -219,17 +230,15 @@ export default function ChatWidget() {
 
                   {/* Error */}
                   {error && !loading && (
-                    <div className="flex items-end gap-[8px]">
-                      <div className="w-[26px] shrink-0">
-                        <Mascot className="w-[26px]" />
-                      </div>
-                      <div className="max-w-[82%] border border-flame/40 bg-flame/10 px-[12px] py-[9px] text-[0.8rem] leading-[1.5] text-ink">
+                    <div className="flex items-end gap-[9px]">
+                      <BotAvatar className="size-[30px]" />
+                      <div className="max-w-[85%] rounded-[18px] rounded-bl-[5px] border border-flame/40 bg-flame/10 px-[13px] py-[9px] text-[0.8rem] leading-[1.5] text-ink">
                         {errText}
                         <a
                           href={WA_URL}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-[6px] block font-mono text-[0.62rem] font-bold uppercase tracking-wide text-blue underline underline-offset-2 hover:text-ink"
+                          className="mt-[7px] block font-mono text-[0.62rem] font-bold uppercase tracking-wide text-blue underline underline-offset-2 hover:text-ink"
                         >
                           {t('chat.wa')}
                         </a>
@@ -241,28 +250,33 @@ export default function ChatWidget() {
 
               {/* Pertanyaan cepat */}
               {showSuggest && (
-                <div className="flex shrink-0 flex-wrap gap-[8px] px-[14px] pt-[2px] pb-[2px]">
-                  {suggestions.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => send(s)}
-                      className="cursor-pointer rounded-full border border-ink/25 bg-transparent px-[12px] py-[7px] font-mono text-[0.6rem] font-medium uppercase tracking-wide text-ink/70 transition-colors hover:border-ink hover:bg-acid hover:text-ink"
-                    >
-                      {s}
-                    </button>
-                  ))}
+                <div className="shrink-0 px-[14px] pt-[2px] pb-[8px]">
+                  <p className="mb-[7px] font-mono text-[0.55rem] font-medium uppercase tracking-[0.14em] text-ink/40">
+                    {t('chat.suggestLabel')}
+                  </p>
+                  <div className="flex flex-wrap gap-[7px]">
+                    {suggestions.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => send(s)}
+                        className="cursor-pointer rounded-full border border-ink/25 bg-transparent px-[12px] py-[7px] font-mono text-[0.62rem] font-medium text-ink/75 transition-colors hover:border-ink hover:bg-acid hover:text-ink"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* Input + disclaimer */}
-              <div className="shrink-0 border-t border-line px-[14px] pt-[12px] pb-[13px]">
+              <div className="shrink-0 border-t border-ink/10 bg-[#f0ebdf] px-[14px] pt-[12px] pb-[13px]">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
                     send()
                   }}
-                  className="flex items-center gap-[8px]"
+                  className="flex items-center gap-[8px] rounded-full border-2 border-ink/15 bg-[#fffdfa] py-[5px] pr-[5px] pl-[16px] transition-colors focus-within:border-ink"
                 >
                   <input
                     ref={inputRef}
@@ -270,13 +284,13 @@ export default function ChatWidget() {
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={t('chat.placeholder')}
                     aria-label={t('chat.placeholder')}
-                    className="min-w-0 flex-1 border border-ink/25 bg-[#fffdfa] px-[12px] py-[10px] text-[0.84rem] text-ink outline-none placeholder:text-ink/35 focus:border-ink"
+                    className="min-w-0 flex-1 bg-transparent text-[0.85rem] text-ink outline-none placeholder:text-ink/35"
                   />
                   <button
                     type="submit"
                     disabled={loading || !input.trim()}
                     aria-label={t('chat.send')}
-                    className="grid size-[38px] shrink-0 cursor-pointer place-items-center rounded-full bg-acid text-[1rem] text-ink transition-colors hover:bg-blue hover:text-paper disabled:cursor-not-allowed disabled:opacity-40"
+                    className="grid size-[34px] shrink-0 cursor-pointer place-items-center rounded-full bg-acid text-[1rem] text-ink transition-colors hover:bg-blue hover:text-paper disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     ↗
                   </button>
@@ -287,7 +301,7 @@ export default function ChatWidget() {
                     href={WA_URL}
                     target="_blank"
                     rel="noreferrer"
-                    className="underline decoration-acid underline-offset-2 transition-colors hover:text-blue"
+                    className="underline decoration-acid decoration-2 underline-offset-2 transition-colors hover:text-blue"
                   >
                     {t('chat.wa')}
                   </a>
@@ -312,7 +326,7 @@ export default function ChatWidget() {
               initial={{ opacity: 0, y: reduce ? 0 : 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: reduce ? 0 : 0.6, duration: 0.3 }}
-              className="absolute -top-[8px] right-[14px] rounded-full border border-ink bg-acid px-[10px] py-[4px] font-mono text-[0.62rem] font-bold uppercase text-ink shadow-[0_4px_10px_rgba(23,23,23,0.18)]"
+              className="absolute -top-[8px] right-[16px] rounded-full border border-ink bg-acid px-[11px] py-[4px] font-mono text-[0.62rem] font-bold uppercase text-ink shadow-[0_4px_10px_rgba(23,23,23,0.18)]"
             >
               {t('chat.hi')}
             </motion.span>

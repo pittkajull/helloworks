@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Design tokens HelloWorks (diambil dari styles.css versi lama)
+   ============================================================ */
+@theme {
+  /* Warna */
+  --color-ink: #171717;
+  --color-paper: #f5f1e9;
+  --color-acid: #d9f85b;
+  --color-blue: #1939d5;
+  --color-flame: #ff5f36;
+  --color-line: rgba(23, 23, 23, 0.18);
+
+  /* Font */
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+  --font-serif: Georgia, "Times New Roman", serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper font-sans text-ink;
+  }
+}
+
+/* ============================================================
+   Animasi CSS (marquee & pulse) + guard prefers-reduced-motion
+   ============================================================ */
+.marquee-track {
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.pulse-dot {
+  box-shadow: 0 0 0 7px rgba(25, 57, 213, 0.15);
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(25, 57, 213, 0.28);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 12px rgba(25, 57, 213, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .pulse-dot {
+    animation: none;
+  }
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  z-index: 20;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+}

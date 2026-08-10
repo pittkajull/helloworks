@@ -26,6 +26,11 @@
   body {
     @apply bg-paper font-sans text-ink;
   }
+
+  /* Header fixed 90px — section jangan ketutup pas lompat anchor */
+  section[id] {
+    scroll-margin-top: 96px;
+  }
 }
 
 /* ============================================================

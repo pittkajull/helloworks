@@ -39,6 +39,7 @@ function LangSwitch({ onDark = false, className = '' }) {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const reduce = useReducedMotion()
   const { pathname } = useLocation()
   const { t } = useLang()
@@ -57,6 +58,14 @@ export default function Header() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
+  // Backdrop glass pas scroll — biar nav tetep kebaca di atas konten
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   const navColor = onDark ? 'text-paper hover:text-acid' : 'text-ink hover:text-blue'
 
   // Dropdown "Other" — Team & Lab beneran (featured = kartu bentang penuh), sisanya placeholder (soon)
@@ -73,8 +82,14 @@ export default function Header() {
       initial={{ y: reduce ? 0 : -90, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: EASE }}
-      className={`absolute top-0 right-0 left-0 z-[5] flex h-[90px] items-center justify-between border-b px-[5vw] max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
-        onDark ? 'border-paper/15' : 'border-line'
+      className={`fixed top-0 right-0 left-0 z-[5] flex h-[90px] items-center justify-between border-b px-[5vw] transition-[background-color,border-color,backdrop-filter] duration-300 max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
+        onDark
+          ? scrolled
+            ? 'border-paper/15 bg-ink/85 backdrop-blur-md'
+            : 'border-paper/15'
+          : scrolled
+            ? 'border-line bg-paper/85 backdrop-blur-md'
+            : 'border-line'
       }`}
     >
       {/* Logo */}
@@ -90,15 +105,22 @@ export default function Header() {
         <span className={`tracking-normal ${onDark ? 'text-acid' : 'text-blue'}`}>.</span>
       </Link>
 
-      {/* Nav desktop */}
-      <nav aria-label="Navigasi utama" className="ml-[12%] flex items-center gap-9 max-[700px]:hidden">
+      {/* Nav desktop — di-center beneran (flex-1) */}
+      <nav
+        aria-label="Navigasi utama"
+        className="flex flex-1 items-center justify-center gap-9 max-[900px]:gap-5 max-[700px]:hidden"
+      >
         {NAV_LINKS.map((link) => (
           <Link
             key={link.to}
             to={link.to}
-            className={`font-mono text-[0.7rem] font-medium uppercase no-underline transition-colors ${navColor}`}
+            className={`group relative font-mono text-[0.7rem] font-medium uppercase no-underline transition-colors max-[900px]:text-[0.62rem] ${navColor}`}
           >
             {t(`nav.${link.key}`)}
+            <span
+              aria-hidden="true"
+              className="absolute -bottom-[6px] left-0 h-[2px] w-full origin-left scale-x-0 bg-current transition-transform duration-300 group-hover:scale-x-100"
+            />
           </Link>
         ))}
 
@@ -109,7 +131,7 @@ export default function Header() {
             aria-haspopup="true"
             aria-expanded={moreOpen}
             onClick={() => setMoreOpen((open) => !open)}
-            className={`flex cursor-pointer items-center gap-[7px] border-0 bg-transparent p-0 font-mono text-[0.7rem] font-medium uppercase transition-colors ${navColor}`}
+            className={`group relative flex cursor-pointer items-center gap-[7px] border-0 bg-transparent p-0 font-mono text-[0.7rem] font-medium uppercase transition-colors max-[900px]:text-[0.62rem] ${navColor}`}
           >
             {t('nav.other')}              <span
                 aria-hidden="true"
@@ -117,6 +139,10 @@ export default function Header() {
               >
               ▾
             </span>
+            <span
+              aria-hidden="true"
+              className="absolute -bottom-[6px] left-0 h-[2px] w-full origin-left scale-x-0 bg-current transition-transform duration-300 group-hover:scale-x-100"
+            />
           </button>
 
           <AnimatePresence>
@@ -222,10 +248,10 @@ export default function Header() {
       </nav>
 
       {/* CTA + pilihan bahasa (desktop) */}
-      <div className="flex items-center gap-[24px] max-[700px]:hidden">
+      <div className="flex items-center gap-[24px] max-[900px]:gap-4 max-[700px]:hidden">
         <Link
           to="/#contact"
-          className={`font-mono text-[0.7rem] font-medium uppercase no-underline transition-colors ${navColor}`}
+          className={`font-mono text-[0.7rem] font-medium uppercase no-underline transition-colors max-[900px]:text-[0.62rem] ${navColor}`}
         >
           {t('nav.cta')} <span className="ml-[10px] text-[1.05rem]">↗</span>
         </Link>

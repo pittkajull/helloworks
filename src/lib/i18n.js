@@ -173,7 +173,7 @@ export const translations = {
     'chat.subtitle': 'AI HelloWorks',
     'chat.online': 'Online',
     'chat.maintenance': 'Maintenance',
-    'chat.hi': 'Hai!',
+    'chat.hi': 'Bot',
     'chat.greeting':
       'Halo! Aku Halo, asisten HelloWorks.\nTanya aja santai soal layanan, tim, proses, atau harga.',
     'chat.greetingHint': 'Kalau bingung mau tanya apa, klik salah satu di bawah:',
@@ -355,7 +355,7 @@ export const translations = {
     'chat.subtitle': 'AI HelloWorks',
     'chat.online': 'Online',
     'chat.maintenance': 'Maintenance',
-    'chat.hi': 'Hi!',
+    'chat.hi': 'Bot',
     'chat.greeting':
       "Hi! I'm Halo, the HelloWorks assistant.\nAsk me anything about our services, team, process, or pricing.",
     'chat.greetingHint': "Not sure what to ask? Pick one of the options below:",

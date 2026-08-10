@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollManager from './components/ScrollManager'
-import MascotHelper from './components/MascotHelper'
+import ChatWidget from './components/ChatWidget'
 import Landing from './pages/Landing'
 import Team from './pages/Team'
 import Lab from './pages/Lab'
@@ -16,7 +16,7 @@ export default function App() {
       <div className="grain" aria-hidden="true" />
       <ScrollManager />
       <Header />
-      <MascotHelper />
+      <ChatWidget />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/team" element={<Team />} />

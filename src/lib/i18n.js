@@ -167,6 +167,26 @@ export const translations = {
     'playbook.ctaHead2': 'kepake di projectmu?',
     'playbook.ctaSub':
       'Ceritain projectnya, kami tunjukin gimana siklus ini bakal jalan di kamu — dari brief sampai hari ke-100.',
+
+    // Chatbot (maskot → AI assistant)
+    'chat.botName': 'Halo',
+    'chat.subtitle': 'AI HelloWorks',
+    'chat.online': 'Online',
+    'chat.hi': 'Hai! 👋',
+    'chat.greeting':
+      'Halo! Aku Halo, asisten HelloWorks 👋\nTanya aja santai soal layanan, tim, proses, atau harga.',
+    'chat.placeholder': 'Ketik pesan…',
+    'chat.send': 'Kirim',
+    'chat.thinking': 'Halo lagi mikir…',
+    'chat.error': 'Ups, lagi gangguan. Coba lagi ya — atau langsung chat tim via WhatsApp.',
+    'chat.errorNoKey': 'Chatbot belum aktif (API key belum disetel di server). Coba lagi nanti ya!',
+    'chat.rateLimit': 'Kebanyakan request nih, bentar lagi ya — atau chat langsung via WhatsApp.',
+    'chat.disclaimer': 'Dijawab AI · bisa salah',
+    'chat.wa': 'WhatsApp tim ↗',
+    'chat.suggest1': 'Jasa apa aja yang ditawarin?',
+    'chat.suggest2': 'Bikin website berapa lama?',
+    'chat.suggest3': 'Minta penawaran project',
+    'chat.suggest4': 'Siapa tim di balik HelloWorks?',
   },
 
   en: {
@@ -327,6 +347,26 @@ export const translations = {
     'playbook.ctaHead2': 'working for your project?',
     'playbook.ctaSub':
       'Tell us about the project, and we will show how this cycle runs for you — from brief to day 100.',
+
+    // Chatbot (mascot → AI assistant)
+    'chat.botName': 'Halo',
+    'chat.subtitle': 'AI HelloWorks',
+    'chat.online': 'Online',
+    'chat.hi': 'Hi! 👋',
+    'chat.greeting':
+      "Hi! I'm Halo, the HelloWorks assistant 👋\nAsk me anything about our services, team, process, or pricing.",
+    'chat.placeholder': 'Type a message…',
+    'chat.send': 'Send',
+    'chat.thinking': 'Halo is thinking…',
+    'chat.error': 'Oops, something went wrong. Try again — or chat with the team on WhatsApp.',
+    'chat.errorNoKey': "Chatbot isn't active yet (no API key on the server). Try again later!",
+    'chat.rateLimit': 'Too many requests, give it a sec — or chat directly on WhatsApp.',
+    'chat.disclaimer': 'AI-generated · may be wrong',
+    'chat.wa': 'WhatsApp the team ↗',
+    'chat.suggest1': 'What services do you offer?',
+    'chat.suggest2': 'How long does a website take?',
+    'chat.suggest3': 'I want a quote for my project',
+    'chat.suggest4': 'Who is behind HelloWorks?',
   },
 }
 

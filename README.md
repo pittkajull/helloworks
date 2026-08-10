@@ -16,6 +16,30 @@ npm run preview    # preview hasil build
 npm run lint       # lint (oxlint)
 ```
 
+## Chatbot AI (maskot "Halo" → chat)
+
+Maskot di pojok kanan bawah adalah **chatbot AI** yang paham konten website ini
+(layanan, tim, proses, kontak). Dia ngobrol lewat **OpenRouter** (`deepseek-chat-v3:free`).
+
+**API key disimpan di SERVER — bukan di frontend** (biar gak bisa dicomot orang dari devtools).
+
+```bash
+cp .env.example .env        # sekali: isi OPENROUTER_API_KEY (dari openrouter.ai/keys)
+npm run chat:server         # terminal 1 — proxy chat (http://localhost:8787)
+npm run dev                 # terminal 2 — frontend (http://localhost:5173)
+```
+
+- Di dev, Vite meng-proxy `/api` → `localhost:8787` otomatis (lihat `vite.config.js`).
+- **Produksi** cukup 1 proses: `npm run build && node server/chat-proxy.js` —
+  server ini sekaligus serve `dist/` + endpoint `/api/chat` (SPA fallback sudah dihandle).
+- Env opsional: `PORT`, `CHAT_MODEL`, `SITE_URL` (lihat `.env.example`).
+- Detail bot (knowledge website, tone santai, guardrails anti-leak) ada di `server/chat-proxy.js`
+  (fungsi `buildSystemPrompt`) — model DILARANG ngarang harga/paket & dilarang bocorin
+  data internal; pertanyaan harga diarahkan ke kontak resmi.
+
+> ⚠️ `.env` tidak ikut di-commit (sudah di `.gitignore`). Jangan pernah taruh API key
+> di file frontend (`src/`) — itu bakal ke-commit & kebaca siapa pun.
+
 ## Bahasa (i18n)
 
 Website mendukung **2 bahasa**: **Indonesia** (default) & **English** — bisa diganti lewat toggle

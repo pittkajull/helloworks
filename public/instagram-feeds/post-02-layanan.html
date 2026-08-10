@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<title>HelloWorks · Post 02 — Layanan</title>
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0e0e0e; }
+  :root {
+    --ink: #171717; --paper: #f5f1e9; --acid: #d9f85b; --blue: #1939d5; --flame: #ff5f36;
+    --line: rgba(23, 23, 23, .18);
+  }
+  .canvas {
+    position: relative; width: 1080px; height: 1080px; overflow: hidden;
+    margin: 0 auto; background: var(--acid); color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+  }
+  .mono { font-family: 'DM Mono', monospace; }
+  .serif { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-weight: 400; letter-spacing: -.01em; }
+  .grain {
+    position: absolute; inset: 0; pointer-events: none; opacity: .05; z-index: 5;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+  }
+  .head {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 62px 72px 0;
+  }
+  .head .label { font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: rgba(23, 23, 23, .7); }
+  .head .label b { color: var(--blue); font-weight: 500; }
+  .head .num { font-size: 15px; color: var(--blue); }
+  .title {
+    position: absolute; left: 72px; right: 72px; top: 150px;
+    font-weight: 800; text-transform: uppercase; letter-spacing: -.045em;
+    line-height: .84; font-size: 96px;
+  }
+  .title .serif { color: var(--blue); letter-spacing: -.02em; }
+  .list {
+    position: absolute; left: 72px; right: 72px; top: 400px; bottom: 110px;
+    display: flex; flex-direction: column;
+  }
+  .row {
+    flex: 1; display: grid; grid-template-columns: 64px 1.25fr 1fr 52px;
+    align-items: center; gap: 28px; border-top: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: 1px solid var(--line); }
+  .row .n { font-size: 16px; color: var(--blue); }
+  .row h3 { font-size: 33px; font-weight: 800; letter-spacing: -.045em; text-transform: uppercase; line-height: 1; }
+  .row p { font-size: 17px; line-height: 1.45; color: rgba(23, 23, 23, .72); font-weight: 500; }
+  .row .ar { font-size: 30px; font-weight: 400; justify-self: end; }
+  .foot {
+    position: absolute; left: 72px; right: 72px; bottom: 52px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--line); padding-top: 24px;
+    font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: rgba(23, 23, 23, .7);
+  }
+  .foot .star { color: var(--blue); font-size: 20px; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="head">
+    <div class="mono label">What we do — <b>5 layanan</b></div>
+    <div class="mono num">02</div>
+  </div>
+
+  <h1 class="title">APA YANG KAMI<br/><span class="serif">kerjakan.</span></h1>
+
+  <div class="list">
+    <div class="row">
+      <span class="mono n">01</span>
+      <h3>Website Custom</h3>
+      <p>Landing page, company profile, web personal — yang gak cuma bagus dilihat, tapi punya cerita.</p>
+      <span class="ar">↗</span>
+    </div>
+    <div class="row">
+      <span class="mono n">02</span>
+      <h3>Design</h3>
+      <p>Poster, branding, visual campaign yang bikin orang berhenti scroll.</p>
+      <span class="ar">↗</span>
+    </div>
+    <div class="row">
+      <span class="mono n">03</span>
+      <h3>Automation</h3>
+      <p>Sistem otomatis yang bikin bisnis lebih efisien — hemat waktu &amp; tenaga.</p>
+      <span class="ar">↗</span>
+    </div>
+    <div class="row">
+      <span class="mono n">04</span>
+      <h3>UI / UX</h3>
+      <p>Interface yang gak cuma indah, tapi gampang dipakai.</p>
+      <span class="ar">↗</span>
+    </div>
+    <div class="row">
+      <span class="mono n">05</span>
+      <h3>Merchandise</h3>
+      <p>Baju, jaket, &amp; produk custom buat brand atau personal.</p>
+      <span class="ar">↗</span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>helloworks.id — @helloworks_id</span>
+    <span class="star">✳</span>
+  </div>
+
+  <div class="grain"></div>
+</div>
+</body>
+</html>

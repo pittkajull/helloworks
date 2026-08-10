@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<title>HelloWorks · Post 06 — CTA</title>
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0e0e0e; }
+  :root {
+    --ink: #171717; --paper: #f5f1e9; --acid: #d9f85b; --blue: #1939d5; --flame: #ff5f36;
+    --line: rgba(23, 23, 23, .18);
+  }
+  .canvas {
+    position: relative; width: 1080px; height: 1080px; overflow: hidden;
+    margin: 0 auto; background: var(--flame); color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+  }
+  .mono { font-family: 'DM Mono', monospace; }
+  .serif { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-weight: 400; letter-spacing: -.01em; }
+  .grain {
+    position: absolute; inset: 0; pointer-events: none; opacity: .05; z-index: 5;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+  }
+  .head {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 62px 72px 0;
+  }
+  .head .label { font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: rgba(23, 23, 23, .75); }
+  .head .label b { color: var(--blue); font-weight: 500; }
+  .head .num { font-size: 15px; color: var(--blue); }
+  .main { position: absolute; left: 72px; right: 72px; top: 200px; }
+  .headline {
+    font-weight: 800; text-transform: uppercase; letter-spacing: -.045em;
+    line-height: .84; font-size: 128px;
+  }
+  .headline .serif { color: var(--blue); letter-spacing: -.02em; }
+  .copy {
+    margin-top: 44px; max-width: 560px;
+    font-size: 24px; line-height: 1.55; font-weight: 600; color: rgba(23, 23, 23, .85);
+  }
+  .copy b { background: var(--acid); padding: 0 9px; font-weight: 700; }
+  .chips {
+    position: absolute; left: 72px; right: 72px; bottom: 210px;
+    display: flex; gap: 18px; flex-wrap: wrap;
+  }
+  .chip {
+    font-size: 15px; letter-spacing: .1em; text-transform: uppercase;
+    border: 2px solid var(--ink); background: var(--paper);
+    padding: 18px 24px; display: flex; align-items: center; gap: 12px;
+    color: var(--ink); text-decoration: none; white-space: nowrap;
+  }
+  .chip b { color: var(--blue); font-weight: 500; font-size: 17px; }
+  .mascot { position: absolute; right: 76px; bottom: 130px; z-index: 2; }
+  .foot {
+    position: absolute; left: 72px; right: 72px; bottom: 54px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--ink); padding-top: 24px;
+    font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: rgba(23, 23, 23, .75);
+  }
+  .foot .star { color: var(--blue); font-size: 20px; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="head">
+    <div class="mono label">Let's talk — <b>ceritain idemu</b></div>
+    <div class="mono num">06</div>
+  </div>
+
+  <div class="main">
+    <h1 class="headline">PUNYA IDE?<br/><span class="serif">Mari wujudkan.</span></h1>
+    <p class="copy">
+      Website, design, atau sistem otomatis buat bisnismu — kami bantu
+      <b>dari nol sampai jadi</b>.
+    </p>
+  </div>
+
+  <div class="chips">
+    <a class="chip" href="mailto:halo@helloworks.id"><b>✉</b> halo@helloworks.id</a>
+    <a class="chip" href="https://wa.me/6287761104114"><b>✆</b> +62 877-6110-4114</a>
+    <a class="chip" href="https://www.instagram.com/helloworks_id/"><b>◎</b> @helloworks_id</a>
+  </div>
+
+  <div class="mascot" aria-hidden="true">
+    <svg viewBox="0 0 80 80" width="175" height="175">
+      <path d="M22 30 Q22 5 40 5 Q58 5 58 30 Z" fill="#ff5f36"/>
+      <rect x="33" y="13" width="14" height="5" rx="2.5" fill="#d9f85b"/>
+      <rect x="16" y="24" width="48" height="48" rx="22" fill="#1939d5"/>
+      <rect x="14" y="27" width="52" height="8" rx="4" fill="#ff5f36"/>
+      <ellipse cx="32" cy="44" rx="5.5" ry="6.5" fill="#f5f1e9"/>
+      <ellipse cx="48" cy="44" rx="5.5" ry="6.5" fill="#f5f1e9"/>
+      <circle cx="33.4" cy="45" r="2.6" fill="#171717"/>
+      <circle cx="49.4" cy="45" r="2.6" fill="#171717"/>
+      <circle cx="26" cy="53" r="3.2" fill="#d9f85b" opacity=".85"/>
+      <circle cx="54" cy="53" r="3.2" fill="#d9f85b" opacity=".85"/>
+      <path d="M27 52 Q40 70 53 52 Z" fill="#171717"/>
+      <path d="M33 54 Q40 62 47 54 Z" fill="#d9f85b"/>
+    </svg>
+  </div>
+
+  <div class="foot">
+    <span>helloworks.id — never stop building</span>
+    <span class="star">✳</span>
+  </div>
+
+  <div class="grain"></div>
+</div>
+</body>
+</html>

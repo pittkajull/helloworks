@@ -49,7 +49,13 @@ function loadEnv() {
 }
 loadEnv()
 
-const MODEL = process.env.CHAT_MODEL || 'deepseek/deepseek-chat-v3:free'
+const MODEL = process.env.CHAT_MODEL || 'google/gemma-4-26b-a4b-it:free'
+// Cadangan otomatis: OpenRouter coba model berikutnya kalau yang utama 429/5xx.
+// (Model :free gampang kena rate-limit — ini bikin chatbot lebih tahan banting.)
+const FALLBACK_MODELS = (process.env.CHAT_FALLBACK_MODELS || 'google/gemma-4-31b-it:free,openai/gpt-oss-20b:free')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
 const PORT = Number(process.env.PORT) || 8787
 const SITE_URL = process.env.SITE_URL || 'http://localhost:5173'
 
@@ -247,7 +253,7 @@ async function handleChat(req, res) {
         'X-Title': 'HelloWorks Chat',
       },
       body: JSON.stringify({
-        model: MODEL,
+        models: [MODEL, ...FALLBACK_MODELS],
         messages: [{ role: 'system', content: buildSystemPrompt(lang) }, ...messages],
         temperature: 0.7,
         max_tokens: 500,
@@ -337,7 +343,12 @@ const server = createServer(async (req, res) => {
   }
 
   if (url.pathname === '/api/health' && req.method === 'GET') {
-    return sendJson(res, 200, { ok: true, model: MODEL, hasKey: Boolean(process.env.OPENROUTER_API_KEY) })
+    return sendJson(res, 200, {
+      ok: true,
+      model: MODEL,
+      fallbacks: FALLBACK_MODELS,
+      hasKey: Boolean(process.env.OPENROUTER_API_KEY),
+    })
   }
   if (url.pathname === '/api/chat' && req.method === 'POST') {
     return handleChat(req, res)
@@ -352,6 +363,7 @@ const server = createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`[helloworks] chat proxy on http://localhost:${PORT}`)
   console.log(`[helloworks] model: ${MODEL}`)
+  console.log(`[helloworks] fallbacks: ${FALLBACK_MODELS.join(', ') || '(none)'}`)
   console.log(
     process.env.OPENROUTER_API_KEY
       ? '[helloworks] OPENROUTER_API_KEY: OK'

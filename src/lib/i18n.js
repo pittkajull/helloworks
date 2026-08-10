@@ -176,6 +176,7 @@ export const translations = {
     'chat.hi': 'Hai!',
     'chat.greeting':
       'Halo! Aku Halo, asisten HelloWorks.\nTanya aja santai soal layanan, tim, proses, atau harga.',
+    'chat.greetingHint': 'Kalau bingung mau tanya apa, klik salah satu di bawah:',
     'chat.placeholder': 'Ketik pesan…',
     'chat.send': 'Kirim',
     'chat.thinking': 'Halo lagi mikir…',
@@ -184,7 +185,6 @@ export const translations = {
     'chat.rateLimit': 'Kebanyakan request nih, bentar lagi ya — atau chat langsung via WhatsApp.',
     'chat.disclaimer': 'Dijawab AI · bisa salah',
     'chat.wa': 'WhatsApp tim ↗',
-    'chat.suggestLabel': 'Tanya cepat',
     'chat.suggest1': 'Jasa apa aja yang ditawarin?',
     'chat.suggest2': 'Bikin website berapa lama?',
     'chat.suggest3': 'Minta penawaran project',
@@ -358,6 +358,7 @@ export const translations = {
     'chat.hi': 'Hi!',
     'chat.greeting':
       "Hi! I'm Halo, the HelloWorks assistant.\nAsk me anything about our services, team, process, or pricing.",
+    'chat.greetingHint': "Not sure what to ask? Pick one of the options below:",
     'chat.placeholder': 'Type a message…',
     'chat.send': 'Send',
     'chat.thinking': 'Halo is thinking…',
@@ -366,7 +367,6 @@ export const translations = {
     'chat.rateLimit': 'Too many requests, give it a sec — or chat directly on WhatsApp.',
     'chat.disclaimer': 'AI-generated · may be wrong',
     'chat.wa': 'WhatsApp the team ↗',
-    'chat.suggestLabel': 'Quick questions',
     'chat.suggest1': 'What services do you offer?',
     'chat.suggest2': 'How long does a website take?',
     'chat.suggest3': 'I want a quote for my project',

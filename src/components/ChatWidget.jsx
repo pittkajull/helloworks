@@ -81,7 +81,8 @@ export default function ChatWidget() {
   // Pas pertama buka: kasih salam pembuka (ikut bahasa aktif)
   useEffect(() => {
     if (open && messages.length === 0) {
-      setMessages([{ role: 'assistant', content: t('chat.greeting') }])
+      // Salam pembuka + flag showSuggest: chip tanya cepat dirender DI DALAM bubble ini
+      setMessages([{ role: 'assistant', content: t('chat.greeting'), showSuggest: true }])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, lang])
@@ -116,7 +117,8 @@ export default function ChatWidget() {
   const send = async (text) => {
     const content = (text ?? input).trim()
     if (!content || loading) return
-    const history = [...messages, { role: 'user', content }]
+    // Kirim ke server cuma role+content (buang flag internal kayak showSuggest)
+    const history = [...messages.map(({ role, content }) => ({ role, content })), { role: 'user', content }]
     // Placeholder bubble kosong — bakal keisi per-chunk pas jawaban ngetik masuk
     setMessages([...history, { role: 'assistant', content: '' }])
     setInput('')
@@ -153,7 +155,6 @@ export default function ChatWidget() {
 
   const errText =
     error === 'no-key' ? t('chat.errorNoKey') : error === 'rate-limit' ? t('chat.rateLimit') : t('chat.error')
-  const showSuggest = messages.length <= 1 && !loading
   const suggestions = [t('chat.suggest1'), t('chat.suggest2'), t('chat.suggest3'), t('chat.suggest4')]
 
   // Belum muncul: jangan render apa-apa (maskot baru muncul setelah delay di atas)
@@ -241,6 +242,26 @@ export default function ChatWidget() {
                         <MascotFace className="w-[34px] shrink-0" />
                         <div className="max-w-[85%] rounded-[20px] border border-ink/10 bg-[#fffdfa] px-[14px] py-[10px] text-[0.84rem] leading-[1.55] text-ink shadow-[0_2px_8px_rgba(23,23,23,0.06)]">
                           {renderMessage(m.content)}
+                          {/* Chip tanya cepat — dirender di dalam bubble salam pembuka */}
+                          {m.showSuggest && (
+                            <>
+                              <p className="mt-[10px] border-t border-dashed border-ink/15 pt-[9px] font-mono text-[0.6rem] font-medium italic tracking-wide text-ink/50">
+                                {t('chat.greetingHint')}
+                              </p>
+                              <div className="mt-[8px] flex flex-wrap gap-[6px]">
+                                {suggestions.map((s) => (
+                                  <button
+                                    key={s}
+                                    type="button"
+                                    onClick={() => send(s)}
+                                    className="cursor-pointer rounded-full border border-ink/20 bg-paper px-[10px] py-[5px] font-mono text-[0.6rem] font-medium text-ink/75 transition-colors hover:border-ink hover:bg-acid hover:text-ink"
+                                  >
+                                    {s}
+                                  </button>
+                                ))}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     )
@@ -286,27 +307,8 @@ export default function ChatWidget() {
                 </div>
               </div>
 
-              {/* Footer: pertanyaan cepat + input + disclaimer — satu blok rapi */}
-              <div className="shrink-0 border-t border-ink/10 bg-[#efe9dc] px-[14px] pt-[11px] pb-[13px]">
-                {showSuggest && (
-                  <div className="mb-[10px]">
-                    <p className="mb-[7px] font-mono text-[0.55rem] font-medium uppercase tracking-[0.14em] text-ink/40">
-                      {t('chat.suggestLabel')}
-                    </p>
-                    <div className="flex flex-wrap gap-[7px]">
-                      {suggestions.map((s) => (
-                        <button
-                          key={s}
-                          type="button"
-                          onClick={() => send(s)}
-                          className="cursor-pointer rounded-full border border-ink/25 bg-[#fffdfa] px-[12px] py-[7px] font-mono text-[0.62rem] font-medium text-ink/75 transition-colors hover:border-ink hover:bg-acid hover:text-ink"
-                        >
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              {/* Footer: input + disclaimer */}
+              <div className="shrink-0 border-t border-ink/10 bg-[#efe9dc] px-[14px] pt-[12px] pb-[13px]">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()

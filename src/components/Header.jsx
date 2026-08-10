@@ -6,7 +6,6 @@ import {
   useReducedMotion,
   useScroll,
   useMotionValue,
-  useSpring,
   useMotionValueEvent,
 } from 'motion/react'
 import { EASE } from '../lib/motion'
@@ -58,27 +57,21 @@ export default function Header() {
     setMoreOpen(false)
   }
 
-  // Smart navbar scroll-linked: header TERPAKU 1:1 ke gerakan scroll (scrub).
-  // Setiap frame, posisi header = posisi scroll sebelumnya MINUS delta scroll,
-  // dijepit antara 0 (muncul) dan -100 (ilang). Gak ada 'ngejar target' jadi
-  // gak mungkin keliatan rubber-band/keterusan. Spring kaku cuma buat halusin
-  // jitter sub-pixel, bukan bikin lag.
+  // Smart navbar scroll-linked: header TERPAKU 1:1 ke scroll (scrub) — TANPA
+  // spring & tanpa akumulasi delta. Posisi dihitung LANGSUNG dari scrollY:
+  //   y = -(scrollY - 140), dijepit 0..-100
+  // Transform update-nya 1:1 secepat rAF, jadi mustahil ketinggalan jari.
   const { scrollY } = useScroll()
   const hideOffset = useMotionValue(0)
-  const springOffset = useSpring(hideOffset, { stiffness: 400, damping: 50, restDelta: 0.5 })
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
-    const prev = scrollY.getPrevious() ?? 0
-    const delta = latest - prev
     setScrolled(latest > 24)
-    if (menuOpen || moreOpen) {
+    if (menuOpen || moreOpen || reduce) {
       hideOffset.set(0)
       return
     }
-    // Ikut persis delta scroll, jepit biar gak lewat batas
-    const target = Math.max(-100, Math.min(0, hideOffset.get() - delta))
-    // Belum lewat 140px → tetep nempel di atas (jangan ilang gegabah)
-    hideOffset.set(latest < 140 ? 0 : reduce ? 0 : target)
+    // 140px pertama: nempel di atas. Lewat itu: ngikut scroll, ilang penuh di -100.
+    hideOffset.set(Math.max(-100, Math.min(0, 140 - latest)))
   })
 
   // Tutup dropdown & menu mobile kalau pindah halaman + pastikan header kebuka
@@ -132,8 +125,8 @@ export default function Header() {
 
   return (
     <motion.header
-      style={{ y: reduce ? 0 : springOffset }}
-      className={`fixed top-0 right-0 left-0 z-[50] h-[90px] border-b bg-ink px-[5vw] transition-[border-color,box-shadow] duration-300 max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
+      style={{ y: reduce ? 0 : hideOffset }}
+      className={`fixed top-0 right-0 left-0 z-[50] h-[90px] border-b bg-ink px-[5vw] will-change-transform transition-[border-color,box-shadow] duration-300 max-[700px]:h-[72px] max-[700px]:px-[6vw] ${
         scrolled ? 'border-paper/15 shadow-[0_10px_30px_rgba(0,0,0,0.35)]' : 'border-paper/10'
       }`}
     >

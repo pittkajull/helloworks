@@ -57,6 +57,11 @@ export const translations = {
     'other.faqDesc': 'Jawaban buat pertanyaan yang sering masuk.',
     'other.soon': 'segera',
 
+    // Floating helper (maskot pojok kanan bawah)
+    'helper.title': 'Punya ide?',
+    'helper.text': 'Ceritakan — kita wujudkan bareng, dari nol sampai jadi.',
+    'helper.cta': 'Ngobrol yuk',
+
     // Halaman Team
     'team.heroSub':
       'Di balik HelloWorks ada lima orang yang percaya setiap ide layak dikembangkan terus-menerus. Kami yang nulis kode-nya, gambar layout-nya, dan bikin sistem yang bikin bisnis jalan lebih efisien.',
@@ -211,6 +216,11 @@ export const translations = {
     'other.labDesc': "Little experiments we're trying out.",
     'other.faqDesc': 'Answers to common questions.',
     'other.soon': 'soon',
+
+    // Floating helper (maskot pojok kanan bawah)
+    'helper.title': 'Got an idea?',
+    'helper.text': 'Tell us — we will build it together, from zero to done.',
+    'helper.cta': "Let's talk",
 
     // Halaman Team
     'team.heroSub':

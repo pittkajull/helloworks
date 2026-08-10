@@ -68,17 +68,6 @@
   }
 }
 
-/* Tab aktif navbar segmented — sudut bawah terpotong ala tiket */
-.notch-tab {
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - 7px),
-    calc(100% - 7px) 100%,
-    7px 100%,
-    0 calc(100% - 7px)
-  );
-}
 
 .grain {
   position: fixed;

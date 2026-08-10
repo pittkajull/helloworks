@@ -46,16 +46,18 @@ export default function Mascot({ className = '', speech = "Let's build!" }) {
         animate={reduce ? undefined : { y: [0, -9, 0] }}
         transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
       >
-        {/* Speech bubble */}
-        <motion.div
-          initial={{ opacity: 0, scale: reduce ? 1 : 0, rotate: reduce ? 0 : -6 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 16, delay: 1 }}
-          className="absolute -top-11 right-14 whitespace-nowrap rounded-xl border border-ink bg-paper px-4 py-2 font-mono text-[0.72rem] font-medium uppercase tracking-wide text-ink max-[700px]:px-2.5 max-[700px]:py-1.5 max-[700px]:text-[0.6rem]"
-        >
-          {speech} <span className="text-flame">✳</span>
-          <span className="absolute -bottom-[7px] right-7 size-3 rotate-45 border-r border-b border-ink bg-paper" />
-        </motion.div>
+        {/* Speech bubble — muncul cuma kalau ada teksnya (helper bisa matiin) */}
+        {speech && (
+          <motion.div
+            initial={{ opacity: 0, scale: reduce ? 1 : 0, rotate: reduce ? 0 : -6 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 16, delay: 1 }}
+            className="absolute -top-11 right-14 whitespace-nowrap rounded-xl border border-ink bg-paper px-4 py-2 font-mono text-[0.72rem] font-medium uppercase tracking-wide text-ink max-[700px]:px-2.5 max-[700px]:py-1.5 max-[700px]:text-[0.6rem]"
+          >
+            {speech} <span className="text-flame">✳</span>
+            <span className="absolute -bottom-[7px] right-7 size-3 rotate-45 border-r border-b border-ink bg-paper" />
+          </motion.div>
+        )}
 
         {/* Asterisk berputar */}
         <motion.span

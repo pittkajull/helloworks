@@ -15,7 +15,7 @@
     --line: rgba(23, 23, 23, .18);
   }
   .canvas {
-    position: relative; width: 1080px; height: 1080px; overflow: hidden;
+    position: relative; width: 1080px; height: 1350px; overflow: hidden;
     margin: 0 auto; background: var(--flame); color: var(--ink);
     font-family: 'Manrope', sans-serif;
   }
@@ -28,24 +28,24 @@
   .head {
     position: absolute; top: 0; left: 0; right: 0;
     display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 62px 72px 0;
+    padding: 72px 72px 0;
   }
   .head .label { font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: rgba(23, 23, 23, .75); }
   .head .label b { color: var(--blue); font-weight: 500; }
   .head .num { font-size: 15px; color: var(--blue); }
-  .main { position: absolute; left: 72px; right: 72px; top: 200px; }
+  .main { position: absolute; left: 72px; right: 72px; top: 260px; }
   .headline {
     font-weight: 800; text-transform: uppercase; letter-spacing: -.045em;
-    line-height: .84; font-size: 128px;
+    line-height: .84; font-size: 142px;
   }
   .headline .serif { color: var(--blue); letter-spacing: -.02em; }
   .copy {
-    margin-top: 44px; max-width: 560px;
+    margin-top: 54px; max-width: 600px;
     font-size: 24px; line-height: 1.55; font-weight: 600; color: rgba(23, 23, 23, .85);
   }
   .copy b { background: var(--acid); padding: 0 9px; font-weight: 700; }
   .chips {
-    position: absolute; left: 72px; right: 72px; bottom: 210px;
+    position: absolute; left: 72px; right: 72px; bottom: 280px;
     display: flex; gap: 18px; flex-wrap: wrap;
   }
   .chip {
@@ -55,9 +55,9 @@
     color: var(--ink); text-decoration: none; white-space: nowrap;
   }
   .chip b { color: var(--blue); font-weight: 500; font-size: 17px; }
-  .mascot { position: absolute; right: 76px; bottom: 130px; z-index: 2; }
+  .mascot { position: absolute; right: 76px; bottom: 170px; z-index: 2; }
   .foot {
-    position: absolute; left: 72px; right: 72px; bottom: 54px;
+    position: absolute; left: 72px; right: 72px; bottom: 72px;
     display: flex; justify-content: space-between; align-items: center;
     border-top: 1px solid var(--ink); padding-top: 24px;
     font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: rgba(23, 23, 23, .75);
@@ -87,7 +87,7 @@
   </div>
 
   <div class="mascot" aria-hidden="true">
-    <svg viewBox="0 0 80 80" width="175" height="175">
+    <svg viewBox="0 0 80 80" width="200" height="200">
       <path d="M22 30 Q22 5 40 5 Q58 5 58 30 Z" fill="#ff5f36"/>
       <rect x="33" y="13" width="14" height="5" rx="2.5" fill="#d9f85b"/>
       <rect x="16" y="24" width="48" height="48" rx="22" fill="#1939d5"/>

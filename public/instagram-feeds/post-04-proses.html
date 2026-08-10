@@ -15,7 +15,7 @@
     --line: rgba(23, 23, 23, .18);
   }
   .canvas {
-    position: relative; width: 1080px; height: 1080px; overflow: hidden;
+    position: relative; width: 1080px; height: 1350px; overflow: hidden;
     margin: 0 auto; background: var(--paper); color: var(--ink);
     font-family: 'Manrope', sans-serif;
   }
@@ -28,22 +28,22 @@
   .head {
     position: absolute; top: 0; left: 0; right: 0;
     display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 62px 72px 0;
+    padding: 72px 72px 0;
   }
   .head .label { font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: rgba(23, 23, 23, .6); }
   .head .label b { color: var(--blue); font-weight: 500; }
   .head .num { font-size: 15px; color: var(--blue); }
   .title {
-    position: absolute; left: 72px; right: 72px; top: 150px;
+    position: absolute; left: 72px; right: 72px; top: 175px;
     font-weight: 800; text-transform: uppercase; letter-spacing: -.045em;
-    line-height: .84; font-size: 88px;
+    line-height: .84; font-size: 96px;
   }
   .title .serif { color: var(--blue); letter-spacing: -.02em; }
   .note {
-    position: absolute; left: 72px; top: 340px;
+    position: absolute; left: 72px; top: 400px;
     font-size: 18px; color: rgba(23, 23, 23, .62); font-weight: 500;
   }
-  .snake { position: absolute; left: 72px; right: 72px; top: 430px; }
+  .snake { position: absolute; left: 72px; right: 72px; top: 500px; }
   .row { display: flex; align-items: center; gap: 18px; }
   .row.two { margin-top: 26px; margin-left: 132px; }
   .chip {
@@ -66,7 +66,7 @@
   }
   .loop small { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: rgba(23, 23, 23, .6); white-space: nowrap; }
   .foot {
-    position: absolute; left: 72px; right: 72px; bottom: 54px;
+    position: absolute; left: 72px; right: 72px; bottom: 72px;
     display: flex; justify-content: space-between; align-items: center;
     border-top: 1px solid var(--line); padding-top: 24px;
     font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: rgba(23, 23, 23, .6);

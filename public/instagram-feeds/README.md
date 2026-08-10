@@ -1,6 +1,6 @@
 # Instagram Feed — Template HelloWorks
 
-6 post feed (carousel) ukuran **1080×1080**, dibuat pakai font & palet asli website HelloWorks:
+6 post feed (carousel) ukuran **1080×1350** (rasio 4:5 — ukuran feed Instagram sekarang), dibuat pakai font & palet asli website HelloWorks:
 
 | File | Isi | Background |
 |---|---|---|
@@ -20,7 +20,7 @@
 2. Klik kanan → **Inspect**.
 3. Di tab *Elements*, klik elemen `<div class="canvas">` (yang ada border highlight-nya).
 4. Klik kanan elemen itu → **Capture node screenshot**.
-   → Tersimpan sebagai PNG **persis 1080×1080** (di layar HiDPI hasilnya 2160×2160 — tetap aman buat Instagram).
+   → Tersimpan sebagai PNG **persis 1080×1350** (di layar HiDPI hasilnya 2160×2700 — tetap aman buat Instagram).
 
 Font: **Manrope** (headline/body) · **DM Mono** (label) · **Georgia italic** (aksen serif) — semua via Google Fonts.
 Palet: `#171717` ink · `#f5f1e9` paper · `#d9f85b` acid · `#1939d5` blue · `#ff5f36` flame.

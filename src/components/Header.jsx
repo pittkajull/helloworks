@@ -215,7 +215,7 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0, x: '-50%' }}
                 exit={{ opacity: 0, y: reduce ? 0 : -10, x: '-50%' }}
                 transition={{ duration: 0.22, ease: 'easeOut' }}
-                className="absolute top-full left-1/2 -ml-8 pt-[11px]"
+                className="absolute top-full left-1/2 -ml-14 pt-[11px]"
               >
                 {/* Mega-menu dua panel ala JCP */}
                 <div className="grid w-[min(560px,calc(100vw-56px))] grid-cols-[190px_1fr] border border-ink bg-paper shadow-[0_14px_30px_rgba(23,23,23,.18)] max-[900px]:grid-cols-1">

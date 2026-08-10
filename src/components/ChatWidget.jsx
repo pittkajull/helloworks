@@ -4,6 +4,7 @@ import { useLang } from '../lib/i18n.js'
 import { streamChat } from '../lib/chat.js'
 import Mascot from './Mascot'
 import MascotTyping from './MascotTyping'
+import MascotFace from './MascotFace'
 
 const WA_URL = 'https://wa.me/6287761104114' // +62 877-6110-4114
 
@@ -51,17 +52,6 @@ function renderMessage(content) {
       </Fragment>
     )
   })
-}
-
-/* Bubble kecil avatar maskot (dipakai tiap pesan bot + typing) */
-function BotAvatar({ className = '' }) {
-  return (
-    <div
-      className={`grid shrink-0 place-items-center rounded-full border-2 border-ink bg-paper p-[3px] shadow-[0_2px_6px_rgba(23,23,23,0.12)] ${className}`}
-    >
-      <Mascot className="w-full" />
-    </div>
-  )
 }
 
 /**
@@ -169,7 +159,7 @@ export default function ChatWidget() {
               role="dialog"
               aria-modal="true"
               aria-label={`${t('chat.botName')} — ${t('chat.subtitle')}`}
-              className="flex h-[500px] max-h-[calc(100dvh-140px)] w-[372px] flex-col overflow-hidden border-2 border-ink bg-paper shadow-[0_30px_80px_rgba(23,23,23,0.35)] max-[700px]:h-[min(500px,calc(100dvh-120px))] max-[700px]:w-[min(372px,calc(100vw-24px))]"
+              className="flex h-[500px] max-h-[calc(100dvh-140px)] w-[372px] flex-col overflow-hidden rounded-[24px] border-2 border-ink bg-paper shadow-[0_30px_80px_rgba(23,23,23,0.35)] max-[700px]:h-[min(500px,calc(100dvh-120px))] max-[700px]:w-[min(372px,calc(100vw-24px))]"
             >
               {/* Aksen acid + garis ink atas */}
               <div className="relative h-[6px] shrink-0 bg-acid">
@@ -214,16 +204,16 @@ export default function ChatWidget() {
                     const isStreamingEmpty =
                       loading && i === messages.length - 1 && m.role === 'assistant' && m.content === ''
                     if (isStreamingEmpty) return null
-                    return m.role === 'user' ? (
+                    return                    m.role === 'user' ? (
                       <div key={i} className="flex justify-end">
-                        <div className="max-w-[85%] rounded-[18px] rounded-br-[5px] bg-ink px-[14px] py-[10px] text-[0.84rem] leading-[1.55] text-paper shadow-[0_2px_8px_rgba(23,23,23,0.18)]">
+                        <div className="max-w-[85%] rounded-[20px] bg-ink px-[14px] py-[10px] text-[0.84rem] leading-[1.55] text-paper shadow-[0_2px_8px_rgba(23,23,23,0.18)]">
                           {renderMessage(m.content)}
                         </div>
                       </div>
                     ) : (
                       <div key={i} className="flex items-end gap-[9px]">
-                        <BotAvatar className="size-[30px]" />
-                        <div className="max-w-[85%] rounded-[18px] rounded-bl-[5px] border border-ink/10 bg-[#fffdfa] px-[14px] py-[10px] text-[0.84rem] leading-[1.55] text-ink shadow-[0_2px_8px_rgba(23,23,23,0.06)]">
+                        <MascotFace className="w-[34px] shrink-0" />
+                        <div className="max-w-[85%] rounded-[20px] border border-ink/10 bg-[#fffdfa] px-[14px] py-[10px] text-[0.84rem] leading-[1.55] text-ink shadow-[0_2px_8px_rgba(23,23,23,0.06)]">
                           {renderMessage(m.content)}
                         </div>
                       </div>
@@ -233,10 +223,10 @@ export default function ChatWidget() {
                   {/* Typing indicator — cuma pas nunggu delta pertama */}
                   {showTyping && (
                     <div className="flex items-end gap-[9px]">
-                      <BotAvatar className="size-[30px]" />
+                      <MascotFace className="w-[34px] shrink-0" />
                       <div
                         aria-label={t('chat.thinking')}
-                        className="flex items-center gap-[6px] rounded-[18px] rounded-bl-[5px] border border-ink/10 bg-[#fffdfa] px-[16px] py-[13px] shadow-[0_2px_8px_rgba(23,23,23,0.06)]"
+                        className="flex items-center gap-[6px] rounded-[20px] border border-ink/10 bg-[#fffdfa] px-[16px] py-[13px] shadow-[0_2px_8px_rgba(23,23,23,0.06)]"
                       >
                         {[0, 1, 2].map((d) => (
                           <motion.span
@@ -253,8 +243,8 @@ export default function ChatWidget() {
                   {/* Error */}
                   {error && !loading && (
                     <div className="flex items-end gap-[9px]">
-                      <BotAvatar className="size-[30px]" />
-                      <div className="max-w-[85%] rounded-[18px] rounded-bl-[5px] border border-flame/40 bg-flame/10 px-[13px] py-[9px] text-[0.8rem] leading-[1.5] text-ink">
+                      <MascotFace className="w-[34px] shrink-0" />
+                      <div className="max-w-[85%] rounded-[20px] border border-flame/40 bg-flame/10 px-[13px] py-[9px] text-[0.8rem] leading-[1.5] text-ink">
                         {errText}
                         <a
                           href={WA_URL}

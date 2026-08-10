@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
   motion,
@@ -58,24 +58,27 @@ export default function Header() {
     setMoreOpen(false)
   }
 
-  // Smart navbar buttery: y digerakkan LANGSUNG oleh scroll velocity lewat
-  // useScroll + useSpring (bukan state boolean + tween kaku). Header jadi
-  // 'scrub' mulus — ikut kecepatan jari pas scroll, bukan nge-pop 0.45s.
+  // Smart navbar scroll-linked: header TERPAKU 1:1 ke gerakan scroll (scrub).
+  // Setiap frame, posisi header = posisi scroll sebelumnya MINUS delta scroll,
+  // dijepit antara 0 (muncul) dan -100 (ilang). Gak ada 'ngejar target' jadi
+  // gak mungkin keliatan rubber-band/keterusan. Spring kaku cuma buat halusin
+  // jitter sub-pixel, bukan bikin lag.
   const { scrollY } = useScroll()
   const hideOffset = useMotionValue(0)
-  const springOffset = useSpring(hideOffset, { stiffness: 300, damping: 30, restDelta: 0.5 })
-  const lastY = useRef(0)
+  const springOffset = useSpring(hideOffset, { stiffness: 400, damping: 50, restDelta: 0.5 })
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
-    const prev = lastY.current
+    const prev = scrollY.getPrevious() ?? 0
+    const delta = latest - prev
     setScrolled(latest > 24)
     if (menuOpen || moreOpen) {
-      lastY.current = latest
+      hideOffset.set(0)
       return
     }
-    if (latest > prev && latest > 140) hideOffset.set(reduce ? 0 : -100)
-    else if (latest < prev || latest < 140) hideOffset.set(0)
-    lastY.current = latest
+    // Ikut persis delta scroll, jepit biar gak lewat batas
+    const target = Math.max(-100, Math.min(0, hideOffset.get() - delta))
+    // Belum lewat 140px → tetep nempel di atas (jangan ilang gegabah)
+    hideOffset.set(latest < 140 ? 0 : reduce ? 0 : target)
   })
 
   // Tutup dropdown & menu mobile kalau pindah halaman + pastikan header kebuka
